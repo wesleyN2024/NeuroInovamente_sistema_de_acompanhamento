@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroInovaMente | Painel dos Pais</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="topo">
+    <div class="container nav">
+      <div class="logo">NeuroInovaMente</div>
+      <nav class="menu">
+        <a href="index.html">Início</a>
+        <a href="login.html">Login</a>
+        <a href="relatorio.html">Relatório</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="secao">
+    <div class="container">
+      <div class="painel-pais">
+        <div class="painel-cabecalho">
+          <div>
+            <span class="tag tag-pequena">Acompanhamento mensal</span>
+            <h4 id="titulo-familia">Olá, família</h4>
+            <p id="subtitulo-painel">Acompanhe abaixo o desenvolvimento do aluno.</p>
+          </div>
+          <a href="#" id="btn-ver-relatorio" class="btn btn-primario">Ver relatório completo</a>
+        </div>
+
+        <div class="pais-grid">
+          <div class="pais-card">
+            <span>Aluno</span>
+            <strong id="card-aluno">-</strong>
+          </div>
+
+          <div class="pais-card">
+            <span>Turma</span>
+            <strong id="card-turma">-</strong>
+          </div>
+
+          <div class="pais-card">
+            <span>Status</span>
+            <strong id="card-status">-</strong>
+          </div>
+        </div>
+
+        <div class="graficos-grid">
+          <div class="grafico-card">
+            <h5>Radar de Desenvolvimento</h5>
+            <div class="grafico-falso radar">
+              <div class="circulo c1"></div>
+              <div class="circulo c2"></div>
+              <div class="circulo c3"></div>
+              <div class="linha linha1"></div>
+              <div class="linha linha2"></div>
+              <div class="linha linha3"></div>
+            </div>
+          </div>
+
+          <div class="grafico-card">
+            <h5>Evolução Trimestral</h5>
+            <div class="grafico-falso linhas">
+              <div class="eixo"></div>
+              <div class="ponto p1"></div>
+              <div class="ponto p2"></div>
+              <div class="ponto p3"></div>
+              <div class="traco t1"></div>
+              <div class="traco t2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="texto-relatorio">
+          <h5>Resumo automático</h5>
+          <p id="resumo-pais">
+            Carregando informações do aluno...
+          </p>
+        </div>
+
+        <div class="tabela-box">
+          <h4>Resumo do cadastro</h4>
+          <div class="tabela-responsiva">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campo</th>
+                  <th>Informação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Nome do aluno</td>
+                  <td id="tb-nome">-</td>
+                </tr>
+                <tr>
+                  <td>Turma</td>
+                  <td id="tb-turma">-</td>
+                </tr>
+                <tr>
+                  <td>Disciplina</td>
+                  <td id="tb-disciplina">-</td>
+                </tr>
+                <tr>
+                  <td>Responsável</td>
+                  <td id="tb-responsavel">-</td>
+                </tr>
+                <tr>
+                  <td>Contato</td>
+                  <td id="tb-contato">-</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td id="tb-status">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/firebase-pais.js"></script>
+</body>
+</html>

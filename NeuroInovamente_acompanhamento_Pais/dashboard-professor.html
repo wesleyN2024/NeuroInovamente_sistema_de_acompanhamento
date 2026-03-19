@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroInovaMente | Painel do Professor</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <header class="topo">
+    <div class="container nav">
+      <div class="logo">NeuroInovaMente</div>
+      <nav class="menu">
+        <a href="index.html">Início</a>
+        <a href="relatorio.html">Relatório</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="secao">
+    <div class="container">
+      <div class="modulo-topo">
+        <span class="tag">Área do Professor</span>
+        <h2>Painel do Professor</h2>
+        <p>Acompanhe rapidamente sua disciplina e a quantidade de alunos vinculados.</p>
+      </div>
+
+      <div class="dashboard">
+        <aside class="sidebar">
+          <h4>NeuroInovaMente</h4>
+          <a href="dashboard-professor.html">Dashboard</a>
+          <a href="relatorio.html">Relatórios</a>
+        </aside>
+
+        <div class="conteudo">
+          <div class="resumo-grid">
+            <div class="resumo-card">
+              <span>Professor</span>
+              <strong id="nome-professor-painel">Não definido</strong>
+            </div>
+
+            <div class="resumo-card">
+              <span>Disciplina</span>
+              <strong id="disciplina-professor-painel">Não definida</strong>
+            </div>
+
+            <div class="resumo-card">
+              <span>Data</span>
+              <strong id="data-atual-professor">--/--/----</strong>
+            </div>
+
+            <div class="resumo-card">
+              <span>Alunos da disciplina</span>
+              <strong id="total-alunos-professor">0</strong>
+            </div>
+          </div>
+
+          <div class="cards-3">
+            <article class="card-link">
+              <h3>Relatórios dos alunos</h3>
+              <p>Abra os relatórios individuais disponíveis no sistema.</p>
+              <a href="relatorio.html" class="btn btn-primario">Abrir relatórios</a>
+            </article>
+
+            <article class="card-link">
+              <h3>Disciplina vinculada</h3>
+              <p id="texto-disciplina-professor">
+                Sua disciplina vinculada aparecerá aqui automaticamente.
+              </p>
+            </article>
+
+            <article class="card-link">
+              <h3>Orientação</h3>
+              <p>
+                Para visualizar alunos e relatórios, utilize os registros já cadastrados no sistema.
+              </p>
+            </article>
+          </div>
+
+          <div class="texto-relatorio">
+            <h5>Resumo rápido</h5>
+            <p id="resumo-professor">
+              Carregando informações do professor...
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/firebase-dashboard-professor.js"></script>
+</body>
+
+</html>

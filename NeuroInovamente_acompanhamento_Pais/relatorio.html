@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroInovaMente | Relatório</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="topo">
+    <div class="container nav">
+      <div class="logo">NeuroInovaMente</div>
+      <nav class="menu">
+        <a href="index.html">Início</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="secao">
+    <div class="container">
+      <section class="relatorio">
+        <div class="relatorio-topo">
+          <div>
+            <span class="tag tag-pequena">Relatório mensal</span>
+            <h2>Relatório de Desenvolvimento NeuroInovaMente</h2>
+            <p id="relatorio-topo-aluno">Carregando dados do aluno...</p>
+          </div>
+          <button class="btn btn-primario btn-baixar-pdf">Baixar PDF</button>
+        </div>
+
+        <div class="relatorio-grid">
+          <div class="card-relatorio">
+            <h4>Dados gerais</h4>
+            <p><strong>Aluno:</strong> <span id="relatorio-nome">-</span></p>
+            <p><strong>Turma:</strong> <span id="relatorio-turma">-</span></p>
+            <p><strong>Disciplina:</strong> <span id="relatorio-disciplina">-</span></p>
+            <p><strong>Status:</strong> <span id="relatorio-status">-</span></p>
+          </div>
+
+          <div class="card-relatorio">
+            <h4>Radar de Desenvolvimento</h4>
+            <div class="grafico-falso radar pequeno">
+              <div class="circulo c1"></div>
+              <div class="circulo c2"></div>
+              <div class="circulo c3"></div>
+              <div class="linha linha1"></div>
+              <div class="linha linha2"></div>
+              <div class="linha linha3"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-relatorio margem-topo">
+          <h4>Evolução Trimestral</h4>
+          <div class="grafico-falso linhas">
+            <div class="eixo"></div>
+            <div class="ponto p1"></div>
+            <div class="ponto p2"></div>
+            <div class="ponto p3"></div>
+            <div class="traco t1"></div>
+            <div class="traco t2"></div>
+          </div>
+        </div>
+
+        <div class="relatorio-grid margem-topo">
+          <div class="card-relatorio">
+            <h4>Aquisição Linguística</h4>
+            <p id="texto-linguistica">
+              Dados ainda não preenchidos para este aluno.
+            </p>
+          </div>
+
+          <div class="card-relatorio">
+            <h4>Perfil Neurocognitivo</h4>
+            <p id="texto-neurocognitivo">
+              Dados ainda não preenchidos para este aluno.
+            </p>
+          </div>
+
+          <div class="card-relatorio">
+            <h4>Integração Psicomotora</h4>
+            <p id="texto-psicomotora">
+              Dados ainda não preenchidos para este aluno.
+            </p>
+          </div>
+
+          <div class="card-relatorio">
+            <h4>Parecer da Especialista</h4>
+            <p id="texto-parecer">
+              Relatório gerado automaticamente com base no cadastro disponível.
+            </p>
+          </div>
+        </div>
+
+        <div class="rodape-relatorio">
+          <p><strong>Responsável Técnica:</strong> Josemary Palmeira da Costa</p>
+          <p>Documento gerado automaticamente via Sistema NeuroTalk.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/firebase-relatorio.js"></script>
+</body>
+</html>
