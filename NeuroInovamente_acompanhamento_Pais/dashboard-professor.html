@@ -2,26 +2,40 @@
 <html lang="pt-BR">
 
 <head>
+  <!-- Define a codificação de caracteres -->
   <meta charset="UTF-8" />
+  
+  <!-- Responsividade para dispositivos móveis -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título da página -->
   <title>NeuroInovaMente | Painel do Professor</title>
+  
+  <!-- Importação do CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
+  <!-- Cabeçalho -->
   <header class="topo">
     <div class="container nav">
+      
+      <!-- Logo -->
       <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu de navegação -->
       <nav class="menu">
         <a href="index.html">Início</a>
-        <a href="relatorio.html">Relatório</a>
       </nav>
     </div>
   </header>
 
+  <!-- Conteúdo principal -->
   <main class="secao">
     <div class="container">
+      
+      <!-- Topo do módulo -->
       <div class="modulo-topo">
         <span class="tag">Área do Professor</span>
         <h2>Painel do Professor</h2>
@@ -29,42 +43,54 @@
       </div>
 
       <div class="dashboard">
+        
+        <!-- Menu lateral -->
         <aside class="sidebar">
           <h4>NeuroInovaMente</h4>
           <a href="dashboard-professor.html">Dashboard</a>
-          <a href="relatorio.html">Relatórios</a>
         </aside>
 
+        <!-- Conteúdo principal do painel -->
         <div class="conteudo">
+          
+          <!-- Cards de resumo -->
           <div class="resumo-grid">
+            
+            <!-- Nome do professor -->
             <div class="resumo-card">
               <span>Professor</span>
               <strong id="nome-professor-painel">Não definido</strong>
             </div>
 
+            <!-- Disciplina -->
             <div class="resumo-card">
               <span>Disciplina</span>
               <strong id="disciplina-professor-painel">Não definida</strong>
             </div>
 
+            <!-- Data atual -->
             <div class="resumo-card">
               <span>Data</span>
               <strong id="data-atual-professor">--/--/----</strong>
             </div>
 
+            <!-- Total de alunos -->
             <div class="resumo-card">
               <span>Alunos da disciplina</span>
               <strong id="total-alunos-professor">0</strong>
             </div>
           </div>
 
+          <!-- Cards informativos -->
           <div class="cards-3">
+            
+            <!-- Relatórios -->
             <article class="card-link">
               <h3>Relatórios dos alunos</h3>
               <p>Abra os relatórios individuais disponíveis no sistema.</p>
-              <a href="relatorio.html" class="btn btn-primario">Abrir relatórios</a>
             </article>
 
+            <!-- Disciplina vinculada -->
             <article class="card-link">
               <h3>Disciplina vinculada</h3>
               <p id="texto-disciplina-professor">
@@ -72,6 +98,7 @@
               </p>
             </article>
 
+            <!-- Orientação -->
             <article class="card-link">
               <h3>Orientação</h3>
               <p>
@@ -80,17 +107,135 @@
             </article>
           </div>
 
+          <!-- Texto de resumo -->
           <div class="texto-relatorio">
             <h5>Resumo rápido</h5>
             <p id="resumo-professor">
               Carregando informações do professor...
             </p>
           </div>
+
+          <!-- Tabela de alunos -->
+          <div class="tabela-box">
+            <h4>Alunos da sua disciplina</h4>
+            
+            <!-- Responsividade da tabela -->
+            <div class="tabela-responsiva">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Aluno</th>
+                    <th>Turma</th>
+                    <th>Status</th>
+                    <th>Responsável</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                
+                <!-- Lista dinâmica de alunos -->
+                <tbody id="lista-alunos-disciplina">
+                  <tr>
+                    <td colspan="5">Carregando alunos...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Área de formulários -->
+          <div class="cards-2" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:24px; margin-top:24px;">
+            
+            <!-- Formulário de relatório -->
+            <article class="card-link">
+              <h3>Registrar relatório do aluno</h3>
+
+              <!-- Seleção de aluno -->
+              <div class="linha-campos" style="margin-top:16px;">
+                <div style="width:100%;">
+                  <label for="select-aluno-relatorio">Aluno</label>
+                  <select id="select-aluno-relatorio">
+                    <option value="">Selecione o aluno</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Data da aula -->
+              <div class="linha-campos" style="margin-top:12px;">
+                <div style="width:100%;">
+                  <label for="data-aula-relatorio">Data da aula</label>
+                  <input type="date" id="data-aula-relatorio" />
+                </div>
+              </div>
+
+              <!-- Nível de desenvolvimento -->
+              <div class="linha-campos" style="margin-top:12px;">
+                <div style="width:100%;">
+                  <label for="nivel-desenvolvimento-relatorio">Nível de desenvolvimento</label>
+                  <select id="nivel-desenvolvimento-relatorio">
+                    <option value="">Selecione</option>
+                    <option value="1">1 - Muito baixo</option>
+                    <option value="2">2 - Abaixo do esperado</option>
+                    <option value="3">3 - Adequado</option>
+                    <option value="4">4 - Bom</option>
+                    <option value="5">5 - Excelente</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Campo de desenvolvimento -->
+              <div style="margin-top:12px;">
+                <label for="desenvolvimento-relatorio">Desenvolvimento</label>
+                <textarea id="desenvolvimento-relatorio" placeholder="Descreva como foi o desenvolvimento do aluno na aula."></textarea>
+              </div>
+
+              <!-- Campo de observações -->
+              <div style="margin-top:12px;">
+                <label for="obs-relatorio">Observações</label>
+                <textarea id="obs-relatorio" placeholder="Observações adicionais do professor."></textarea>
+              </div>
+
+              <!-- Botão salvar -->
+              <div class="acoes" style="margin-top:16px;">
+                <button class="btn btn-primario" id="btn-salvar-relatorio" type="button">Salvar relatório</button>
+              </div>
+
+              <!-- Mensagem de retorno -->
+              <p id="mensagem-relatorio" style="margin-top:12px;"></p>
+            </article>
+
+            <!-- Lista de presença -->
+            <article class="card-link">
+              <h3>Lista de presença</h3>
+
+              <!-- Data -->
+              <div class="linha-campos" style="margin-top:16px;">
+                <div style="width:100%;">
+                  <label for="data-presenca">Data da aula</label>
+                  <input type="date" id="data-presenca" />
+                </div>
+              </div>
+
+              <!-- Lista dinâmica -->
+              <div id="lista-presenca" style="margin-top:16px;">
+                <p>Carregando lista de presença...</p>
+              </div>
+
+              <!-- Botão salvar -->
+              <div class="acoes" style="margin-top:16px;">
+                <button class="btn btn-primario" id="btn-salvar-presenca" type="button">Salvar presença</button>
+              </div>
+
+              <!-- Mensagem -->
+              <p id="mensagem-presenca" style="margin-top:12px;"></p>
+            </article>
+          </div>
+
         </div>
       </div>
     </div>
   </main>
 
+  <!-- Script responsável pela lógica do painel (Firebase) -->
   <script type="module" src="js/firebase-dashboard-professor.js"></script>
 </body>
 
