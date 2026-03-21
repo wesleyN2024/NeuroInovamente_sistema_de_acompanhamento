@@ -2,17 +2,29 @@
 <html lang="pt-BR">
 
 <head>
+  <!-- Define a codificação de caracteres como UTF-8 -->
   <meta charset="UTF-8" />
+  
+  <!-- Responsividade para diferentes tamanhos de tela -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título da página exibido na aba do navegador -->
   <title>NeuroInovaMente | Início</title>
+  
+  <!-- Importação do arquivo de estilos CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
+  <!-- Cabeçalho do site -->
   <header class="topo">
     <div class="container nav">
-      <div class="logo">NeuroTalk</div>
+      
+      <!-- Logo ou nome do sistema -->
+      <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu de navegação -->
       <nav class="menu">
         <a href="index.html">Início</a>
         <a href="#como-funciona">Como funciona</a>
@@ -23,41 +35,65 @@
   </header>
 
   <main>
+
+    <!-- Seção principal (hero) -->
     <section class="hero" id="inicio">
       <div class="container hero-grid">
+        
+        <!-- Texto principal -->
         <div class="hero-texto">
+          
+          <!-- Tag de destaque -->
           <span class="tag">Sistema de acompanhamento infantil</span>
+          
+          <!-- Título principal -->
           <h1>NeuroInovaMente: acompanhamento diário, evolução mensal e relatórios para famílias</h1>
+          
+          <!-- Descrição do sistema -->
           <p>
             Um sistema visual para professoras, coordenação e famílias acompanharem
             o desenvolvimento infantil com organização, clareza e praticidade.
           </p>
+          
+          <!-- Botões principais -->
           <div class="hero-botoes">
             <a href="login.html" class="btn btn-primario">Entrar no sistema</a>
             <a href="#modulos" class="btn btn-secundario">Ver módulos</a>
           </div>
         </div>
 
+        <!-- Card visual simulando um painel -->
         <div class="hero-card">
+          
+          <!-- Cabeçalho estilo janela (bolinhas decorativas) -->
           <div class="mini-header">
             <span class="bolinha"></span>
             <span class="bolinha"></span>
             <span class="bolinha"></span>
           </div>
 
+          <!-- Conteúdo do painel -->
           <div class="mini-painel">
+            
+            <!-- Card de informação -->
             <div class="mini-card">
               <h4>Turma ativa</h4>
               <p>Infantil A</p>
             </div>
+            
+            <!-- Card de informação -->
             <div class="mini-card">
               <h4>Registros do dia</h4>
               <p>18</p>
             </div>
+            
+            <!-- Card de informação -->
             <div class="mini-card">
               <h4>Média mensal</h4>
               <p>3,4</p>
             </div>
+            
+            <!-- Card destacado -->
             <div class="mini-card destaque">
               <h4>Relatórios</h4>
               <p>Prontos em PDF</p>
@@ -67,32 +103,41 @@
       </div>
     </section>
 
+    <!-- Seção "Como funciona" -->
     <section class="secao" id="como-funciona">
       <div class="container">
+        
+        <!-- Título da seção -->
         <div class="titulo-secao">
           <span class="tag">Como funciona</span>
           <h2>Um fluxo simples para a equipe e fácil de entender para as famílias</h2>
         </div>
 
+        <!-- Cards explicativos -->
         <div class="cards-4">
+          
+          <!-- Etapa 1 -->
           <article class="card-info">
             <div class="icone">1</div>
             <h3>Registro diário</h3>
             <p>As professoras registram rapidamente as notas e observações de cada criança.</p>
           </article>
 
+          <!-- Etapa 2 -->
           <article class="card-info">
             <div class="icone">2</div>
             <h3>Cálculo automático</h3>
             <p>O sistema organiza médias mensais, trimestrais e visão geral da turma.</p>
           </article>
 
+          <!-- Etapa 3 -->
           <article class="card-info">
             <div class="icone">3</div>
             <h3>Gráficos visuais</h3>
             <p>Radar e evolução ajudam a visualizar o progresso de forma clara.</p>
           </article>
 
+          <!-- Etapa 4 -->
           <article class="card-info">
             <div class="icone">4</div>
             <h3>Relatórios exportáveis</h3>
@@ -102,26 +147,34 @@
       </div>
     </section>
 
+    <!-- Seção de módulos do sistema -->
     <section class="secao fundo-suave" id="modulos">
       <div class="container">
+        
+        <!-- Título centralizado -->
         <div class="titulo-secao centralizado">
           <span class="tag">Módulos do sistema</span>
           <h2>Veja as áreas principais do protótipo</h2>
         </div>
 
+        <!-- Cards de navegação -->
         <div class="cards-3">
+          
+          <!-- Módulo de login -->
           <article class="card-link">
             <h3>Login</h3>
             <p>Acesso para professor, coordenação e pais.</p>
             <a href="login.html" class="btn btn-primario">Abrir tela</a>
           </article>
 
+          <!-- Módulo do professor -->
           <article class="card-link">
             <h3>Painel do Professor</h3>
             <p>Lançamento diário rápido com notas e observações.</p>
             <a href="dashboard-professor.html" class="btn btn-primario">Abrir painel</a>
           </article>
 
+          <!-- Módulo dos pais -->
           <article class="card-link">
             <h3>Painel dos Pais</h3>
             <p>Visualização acolhedora da evolução mensal da criança.</p>
@@ -131,6 +184,8 @@
       </div>
     </section>
   </main>
+
+  <!-- Importação do JavaScript -->
   <script src="js/script.js"></script>
 </body>
 
