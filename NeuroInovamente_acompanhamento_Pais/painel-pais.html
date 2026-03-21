@@ -1,130 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+  <!-- Define a codificação de caracteres da página -->
   <meta charset="UTF-8" />
+  
+  <!-- Faz a página se adaptar corretamente em telas menores -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeuroInovaMente | Painel dos Pais</title>
+  
+  <!-- Título exibido na aba do navegador -->
+  <title>NeuroInovaMente | Cadastro de Alunos</title>
+  
+  <!-- Importa o arquivo de estilos CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
+  <!-- Cabeçalho principal do site -->
   <header class="topo">
     <div class="container nav">
+      
+      <!-- Logo ou nome do sistema -->
       <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu de navegação -->
       <nav class="menu">
         <a href="index.html">Início</a>
-        <a href="login.html">Login</a>
+        <a href="dashboard-coordenacao.html">Coordenação</a>
+        <a href="professores.html">Professores</a>
         <a href="relatorio.html">Relatório</a>
       </nav>
     </div>
   </header>
 
+  <!-- Conteúdo principal da página -->
   <main class="secao">
     <div class="container">
+      
+      <!-- Título e descrição do módulo -->
+      <div class="modulo-topo">
+        <span class="tag">Gestão escolar</span>
+        <h2>Cadastro de Alunos</h2>
+        <p>Cadastre, visualize e remova alunos do sistema.</p>
+      </div>
+
+      <!-- Painel com formulário de cadastro -->
       <div class="painel-pais">
-        <div class="painel-cabecalho">
+        <form class="form-cadastro" id="form-aluno">
+          
+          <!-- Linha com nome do aluno e turma -->
+          <div class="linha-campos">
+            <div>
+              <label for="nome-aluno">Nome do aluno</label>
+              <input type="text" id="nome-aluno" placeholder="Digite o nome do aluno" />
+            </div>
+
+            <div>
+              <label for="turma-aluno">Turma</label>
+              <input type="text" id="turma-aluno" placeholder="Ex.: Infantil A" />
+            </div>
+          </div>
+
+          <!-- Linha com disciplina e idade -->
+          <div class="linha-campos">
+            <div>
+              <label for="disciplina-aluno">Disciplina</label>
+              <select id="disciplina-aluno">
+                <option value="">Selecione a disciplina</option>
+                <option value="NeuroTalk">NeuroTalk</option>
+                <option value="NeuroPlay">NeuroPlay</option>
+                <option value="NeuroMovi">NeuroMovi</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="idade-aluno">Idade</label>
+              <input type="text" id="idade-aluno" placeholder="Ex.: 3 anos" />
+            </div>
+          </div>
+
+          <!-- Linha com responsável e e-mail -->
+          <div class="linha-campos">
+            <div>
+              <label for="responsavel-aluno">Responsável</label>
+              <input type="text" id="responsavel-aluno" placeholder="Nome do responsável" />
+            </div>
+
+            <div>
+              <label for="email-responsavel-aluno">E-mail do responsável</label>
+              <input type="email" id="email-responsavel-aluno" placeholder="email@exemplo.com" />
+            </div>
+          </div>
+
+          <!-- Linha com contato e status -->
+          <div class="linha-campos">
+            <div>
+              <label for="contato-aluno">Contato</label>
+              <input type="text" id="contato-aluno" maxlength="11"  placeholder="Telefone ou WhatsApp" />
+            </div>
+
+            <div>
+              <label for="status-aluno">Status</label>
+              <select id="status-aluno">
+                <option value="Ativo">Ativo</option>
+                <option value="Em avaliação">Em avaliação</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Campo de observações -->
           <div>
-            <span class="tag tag-pequena">Acompanhamento mensal</span>
-            <h4 id="titulo-familia">Olá, família</h4>
-            <p id="subtitulo-painel">Acompanhe abaixo o desenvolvimento do aluno.</p>
+            <label for="obs-aluno">Observações</label>
+            <textarea id="obs-aluno" placeholder="Informações importantes sobre o aluno"></textarea>
           </div>
-          <a href="#" id="btn-ver-relatorio" class="btn btn-primario">Ver relatório completo</a>
+
+          <!-- Botões de ação do formulário -->
+          <div class="acoes">
+            <button type="button" class="btn btn-primario" id="btn-salvar-aluno">Salvar aluno</button>
+            <button type="button" class="btn btn-secundario" id="btn-limpar-aluno">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabela com os alunos cadastrados -->
+      <div class="tabela-box">
+        <h4>Alunos cadastrados</h4>
+        <div class="tabela-responsiva">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Turma</th>
+                <th>Disciplina</th>
+                <th>Idade</th>
+                <th>Responsável</th>
+                <th>E-mail do responsável</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            
+            <!-- Corpo da tabela preenchido dinamicamente pelo JavaScript -->
+            <tbody id="lista-alunos">
+              <!-- preenchido via JS -->
+            </tbody>
+          </table>
         </div>
-
-        <div class="pais-grid">
-          <div class="pais-card">
-            <span>Aluno</span>
-            <strong id="card-aluno">-</strong>
-          </div>
-
-          <div class="pais-card">
-            <span>Turma</span>
-            <strong id="card-turma">-</strong>
-          </div>
-
-          <div class="pais-card">
-            <span>Status</span>
-            <strong id="card-status">-</strong>
-          </div>
-        </div>
-
-        <div class="graficos-grid">
-          <div class="grafico-card">
-            <h5>Radar de Desenvolvimento</h5>
-            <div class="grafico-falso radar">
-              <div class="circulo c1"></div>
-              <div class="circulo c2"></div>
-              <div class="circulo c3"></div>
-              <div class="linha linha1"></div>
-              <div class="linha linha2"></div>
-              <div class="linha linha3"></div>
-            </div>
-          </div>
-
-          <div class="grafico-card">
-            <h5>Evolução Trimestral</h5>
-            <div class="grafico-falso linhas">
-              <div class="eixo"></div>
-              <div class="ponto p1"></div>
-              <div class="ponto p2"></div>
-              <div class="ponto p3"></div>
-              <div class="traco t1"></div>
-              <div class="traco t2"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="texto-relatorio">
-          <h5>Resumo automático</h5>
-          <p id="resumo-pais">
-            Carregando informações do aluno...
-          </p>
-        </div>
-
-        <div class="tabela-box">
-          <h4>Resumo do cadastro</h4>
-          <div class="tabela-responsiva">
-            <table>
-              <thead>
-                <tr>
-                  <th>Campo</th>
-                  <th>Informação</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Nome do aluno</td>
-                  <td id="tb-nome">-</td>
-                </tr>
-                <tr>
-                  <td>Turma</td>
-                  <td id="tb-turma">-</td>
-                </tr>
-                <tr>
-                  <td>Disciplina</td>
-                  <td id="tb-disciplina">-</td>
-                </tr>
-                <tr>
-                  <td>Responsável</td>
-                  <td id="tb-responsavel">-</td>
-                </tr>
-                <tr>
-                  <td>Contato</td>
-                  <td id="tb-contato">-</td>
-                </tr>
-                <tr>
-                  <td>Status</td>
-                  <td id="tb-status">-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
     </div>
   </main>
 
-  <script type="module" src="js/firebase-pais.js"></script>
+  <!-- Script responsável pela lógica do cadastro de alunos -->
+  <script type="module" src="js/firebase-alunos.js"></script>
 </body>
+
 </html>
