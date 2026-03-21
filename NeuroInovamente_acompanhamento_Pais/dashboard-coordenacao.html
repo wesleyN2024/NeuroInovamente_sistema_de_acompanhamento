@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- Define a codificação de caracteres da página -->
   <meta charset="UTF-8" />
+  
+  <!-- Faz a página se adaptar corretamente em celulares e tablets -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título exibido na aba do navegador -->
   <title>NeuroInovaMente | Painel da Coordenação</title>
+  
+  <!-- Importa o arquivo de estilos CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- Cabeçalho principal do site -->
   <header class="topo">
     <div class="container nav">
+      
+      <!-- Logo ou nome do sistema -->
       <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu de navegação principal -->
       <nav class="menu">
         <a href="index.html">Início</a>
         <a href="alunos.html">Alunos</a>
@@ -20,15 +32,21 @@
     </div>
   </header>
 
+  <!-- Conteúdo principal da página -->
   <main class="secao">
     <div class="container">
+      
+      <!-- Bloco de apresentação do módulo -->
       <div class="modulo-topo">
         <span class="tag">Coordenação</span>
         <h2>Painel da Coordenação</h2>
         <p>Visão geral do sistema, da equipe e das turmas em um só lugar.</p>
       </div>
 
+      <!-- Estrutura principal do dashboard -->
       <div class="dashboard">
+        
+        <!-- Menu lateral -->
         <aside class="sidebar">
           <h4>NeuroInovaMente</h4>
           <a href="dashboard-coordenacao.html">Dashboard</a>
@@ -37,42 +55,55 @@
           <a href="relatorio.html">Relatórios</a>
         </aside>
 
+        <!-- Área principal de conteúdo -->
         <div class="conteudo">
+          
+          <!-- Cards de resumo geral -->
           <div class="resumo-grid">
+            
+            <!-- Card com total de alunos -->
             <div class="resumo-card">
               <span>Total de alunos</span>
               <strong id="total-alunos">0</strong>
             </div>
 
+            <!-- Card com total de usuários autorizados -->
             <div class="resumo-card">
               <span>Total de usuários autorizados</span>
               <strong id="total-professores">0</strong>
             </div>
 
+            <!-- Card com total de turmas ativas -->
             <div class="resumo-card">
               <span>Turmas ativas</span>
               <strong id="total-turmas">0</strong>
             </div>
 
+            <!-- Card com total de relatórios disponíveis -->
             <div class="resumo-card">
               <span>Relatórios disponíveis</span>
               <strong id="total-avaliacoes">0</strong>
             </div>
           </div>
 
+          <!-- Cards com atalhos para módulos -->
           <div class="cards-3">
+            
+            <!-- Atalho para cadastro de alunos -->
             <article class="card-link">
               <h3>Cadastro de alunos</h3>
               <p>Gerencie os alunos cadastrados e acompanhe as turmas.</p>
               <a href="alunos.html" class="btn btn-primario">Abrir alunos</a>
             </article>
 
+            <!-- Atalho para usuários autorizados -->
             <article class="card-link">
               <h3>Usuários autorizados</h3>
               <p>Gerencie professores, coordenação e responsáveis.</p>
               <a href="professores.html" class="btn btn-primario">Abrir usuários</a>
             </article>
 
+            <!-- Atalho para relatórios -->
             <article class="card-link">
               <h3>Relatórios</h3>
               <p>Visualize os relatórios individuais dos alunos.</p>
@@ -80,8 +111,11 @@
             </article>
           </div>
 
+          <!-- Tabela com resumo das turmas -->
           <div class="tabela-box">
             <h4>Resumo de turmas</h4>
+            
+            <!-- Área responsiva da tabela -->
             <div class="tabela-responsiva">
               <table>
                 <thead>
@@ -92,6 +126,8 @@
                     <th>Status</th>
                   </tr>
                 </thead>
+                
+                <!-- Corpo da tabela preenchido dinamicamente pelo JavaScript -->
                 <tbody id="lista-turmas">
                   <tr>
                     <td colspan="4">Nenhuma turma encontrada ainda.</td>
@@ -101,6 +137,7 @@
             </div>
           </div>
 
+          <!-- Texto com leitura rápida da coordenação -->
           <div class="texto-relatorio">
             <h5>Leitura rápida da coordenação</h5>
             <p id="resumo-coordenacao">
@@ -112,6 +149,7 @@
     </div>
   </main>
 
+  <!-- Script JavaScript responsável pela lógica do painel da coordenação -->
   <script type="module" src="js/firebase-dashboard-coordenacao.js"></script>
 </body>
 </html>
