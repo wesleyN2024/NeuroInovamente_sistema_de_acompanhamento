@@ -2,48 +2,79 @@
 <html lang="pt-BR">
 
 <head>
+  <!-- Define a codificação de caracteres -->
   <meta charset="UTF-8" />
+  
+  <!-- Garante responsividade em dispositivos móveis -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título da página -->
   <title>NeuroInovaMente | Login</title>
+  
+  <!-- Importação do CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 
 <body>
 
+  <!-- Cabeçalho -->
   <header class="topo">
     <div class="container nav">
+      
+      <!-- Logo do sistema -->
       <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu simples com link de volta -->
       <nav class="menu">
         <a href="index.html">Início</a>
       </nav>
     </div>
   </header>
 
+  <!-- Conteúdo principal centralizado -->
   <main class="pagina-central">
     <section class="container">
+      
+      <!-- Caixa principal de login -->
       <div class="login-box">
+        
+        <!-- Lado esquerdo (formulário de login) -->
         <div class="login-lado">
+          
+          <!-- Título -->
           <h3>Entrar no sistema</h3>
+          
+          <!-- Descrição -->
           <p>Use sua conta pessoal autorizada pela clínica.</p>
 
+          <!-- Área do formulário -->
           <div class="form-login">
+            
+            <!-- Botão de login com Google -->
             <button type="button" id="btn-google-login" class="btn btn-primario btn-full">
               Entrar com Google
             </button>
           </div>
 
+          <!-- Links auxiliares -->
           <div class="login-links">
             <a href="index.html">Voltar para o início</a>
           </div>
         </div>
 
+        <!-- Lado direito (informações do sistema) -->
         <div class="login-destaque">
+          
+          <!-- Nome do sistema -->
           <h3>NeuroInovaMente</h3>
+          
+          <!-- Descrição do sistema -->
           <p>
             Plataforma de acompanhamento infantil com foco em registros diários,
             médias automáticas e relatórios visuais para a equipe técnica.
           </p>
 
+          <!-- Lista de funcionalidades -->
           <ul>
             <li>Registro por aluno</li>
             <li>Gráficos de desenvolvimento</li>
@@ -55,6 +86,7 @@
     </section>
   </main>
 
+  <!-- Importação do JavaScript com módulos (Firebase login) -->
   <script type="module" src="js/login-firebase.js"></script>
 </body>
 
