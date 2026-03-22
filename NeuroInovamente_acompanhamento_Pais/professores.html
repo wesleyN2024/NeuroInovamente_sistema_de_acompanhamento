@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- Define a codificação de caracteres da página -->
   <meta charset="UTF-8" />
+  
+  <!-- Faz a página se adaptar corretamente em diferentes tamanhos de tela -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título exibido na aba do navegador -->
   <title>NeuroInovaMente| Usuários Autorizados</title>
+  
+  <!-- Importa o arquivo de estilos CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- Cabeçalho principal do site -->
   <header class="topo">
     <div class="container nav">
+      
+      <!-- Logo ou nome do sistema -->
       <div class="logo">NeuroInovaMente</div>
+      
+      <!-- Menu de navegação -->
       <nav class="menu">
         <a href="index.html">Início</a>
         <a href="dashboard-coordenacao.html">Coordenação</a>
@@ -20,16 +32,22 @@
     </div>
   </header>
 
+  <!-- Conteúdo principal da página -->
   <main class="secao">
     <div class="container">
+      
+      <!-- Título e descrição do módulo -->
       <div class="modulo-topo">
         <span class="tag">Coordenação</span>
         <h2>Cadastro de Usuários Autorizados</h2>
         <p>Área exclusiva da coordenação para autorizar professores, coordenação e responsáveis no sistema.</p>
       </div>
 
+      <!-- Painel com formulário de cadastro -->
       <div class="painel-pais">
         <form class="form-cadastro" id="form-professor">
+          
+          <!-- Linha com nome completo e função -->
           <div class="linha-campos">
             <div>
               <label for="nome-professor">Nome completo</label>
@@ -42,6 +60,7 @@
             </div>
           </div>
 
+          <!-- Linha com turma e disciplina -->
           <div class="linha-campos">
             <div>
               <label for="turma-professor">Turma</label>
@@ -59,6 +78,7 @@
             </div>
           </div>
 
+          <!-- Linha com e-mail e telefone -->
           <div class="linha-campos">
             <div>
               <label for="email-professor">E-mail pessoal</label>
@@ -67,10 +87,11 @@
 
             <div>
               <label for="telefone-professor">Telefone</label>
-              <input type="text" id="telefone-professor" placeholder="Telefone ou WhatsApp" />
+              <input type="text" id="telefone-professor" maxlength = 15 placeholder="Telefone ou WhatsApp" />
             </div>
           </div>
 
+          <!-- Linha com perfil e status -->
           <div class="linha-campos">
             <div>
               <label for="perfil-professor">Perfil</label>
@@ -91,6 +112,7 @@
             </div>
           </div>
 
+          <!-- Botões de ação do formulário -->
           <div class="acoes">
             <button type="button" class="btn btn-primario" id="btn-salvar-professor">Salvar usuário</button>
             <button type="button" class="btn btn-secundario" id="btn-limpar-professor">Limpar</button>
@@ -98,6 +120,7 @@
         </form>
       </div>
 
+      <!-- Tabela com a lista de usuários autorizados -->
       <div class="tabela-box">
         <h4>Usuários autorizados</h4>
         <div class="tabela-responsiva">
@@ -114,6 +137,8 @@
                 <th>Ações</th>
               </tr>
             </thead>
+            
+            <!-- Corpo da tabela preenchido dinamicamente pelo JavaScript -->
             <tbody id="lista-professores">
               <!-- preenchido via JS -->
             </tbody>
@@ -123,6 +148,7 @@
     </div>
   </main>
 
+  <!-- Script responsável pela lógica do cadastro de usuários -->
   <script type="module" src="js/firebase-professores.js"></script>
 </body>
 </html>
