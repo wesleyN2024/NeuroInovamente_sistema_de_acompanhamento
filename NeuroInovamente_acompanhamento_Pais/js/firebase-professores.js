@@ -1,46 +1,58 @@
+// Importa a instância do banco de dados Firebase
 import { db } from "./firebase-config.js";
+
+// Importa funções do Firestore para manipulação de dados
 import {
   collection,
-  addDoc,
   getDocs,
   deleteDoc,
   doc,
   query,
-  where
+  where,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+// Executa quando a página termina de carregar
 document.addEventListener("DOMContentLoaded", () => {
-  protegerPaginaProfessores();
-  ajustarMenuPorPerfil();
-  configurarCadastroProfessoresFirestore();
+  protegerPaginaProfessores(); // Verifica se o usuário pode acessar a página
+  ajustarMenuPorPerfil(); // Ajusta o menu conforme o perfil do usuário
+  configurarCadastroProfessoresFirestore(); // Configura cadastro de usuários
+  configurarMascaraTelefoneProfessor(); // Aplica máscara no campo de telefone
 });
 
+// Função para obter o usuário logado do localStorage
 function obterUsuarioLogado() {
   return JSON.parse(localStorage.getItem("neurotalk_usuario")) || null;
 }
 
+// Função que protege a página de professores (apenas coordenação pode acessar)
 function protegerPaginaProfessores() {
   const paginaAtual = window.location.pathname.split("/").pop();
 
+  // Se não estiver na página correta, não faz nada
   if (paginaAtual !== "professores.html") return;
 
   const usuario = obterUsuarioLogado();
 
+  // Se não estiver logado ou não for coordenação, bloqueia acesso
   if (!usuario || usuario.perfil !== "Coordenação") {
     alert("Acesso restrito à coordenação.");
     window.location.href = "login.html";
   }
 }
 
+// Ajusta os links do menu conforme o perfil do usuário
 function ajustarMenuPorPerfil() {
   const usuario = obterUsuarioLogado();
   if (!usuario) return;
 
+  // Seleciona links do menu
   const linksProfessores = document.querySelectorAll('a[href="professores.html"]');
   const linksCoordenacao = document.querySelectorAll('a[href="dashboard-coordenacao.html"]');
   const linksPais = document.querySelectorAll('a[href="painel-pais.html"]');
   const linksAlunos = document.querySelectorAll('a[href="alunos.html"]');
 
+  // Se não for coordenação, oculta os links
   if (usuario.perfil !== "Coordenação") {
     linksProfessores.forEach((link) => (link.style.display = "none"));
     linksCoordenacao.forEach((link) => (link.style.display = "none"));
@@ -49,6 +61,7 @@ function ajustarMenuPorPerfil() {
   }
 }
 
+// Limpa os campos do formulário de cadastro
 function limparFormularioProfessorCadastro() {
   const campos = [
     "#nome-professor",
@@ -58,11 +71,13 @@ function limparFormularioProfessorCadastro() {
     "#telefone-professor"
   ];
 
+  // Limpa inputs principais
   campos.forEach((seletor) => {
     const campo = document.querySelector(seletor);
     if (campo) campo.value = "";
   });
 
+  // Reseta selects
   const perfil = document.querySelector("#perfil-professor");
   const status = document.querySelector("#status-professor");
   const disciplina = document.querySelector("#disciplina-professor");
@@ -72,38 +87,55 @@ function limparFormularioProfessorCadastro() {
   if (disciplina) disciplina.value = "";
 }
 
+// Configura o cadastro de professores no Firestore
 async function configurarCadastroProfessoresFirestore() {
   const botaoSalvar = document.querySelector("#btn-salvar-professor");
   const botaoLimpar = document.querySelector("#btn-limpar-professor");
   const lista = document.querySelector("#lista-professores");
 
+  // Se elementos não existirem, interrompe execução
   if (!botaoSalvar || !lista) return;
 
+  // Carrega lista inicial de usuários
   await renderizarProfessoresFirestore();
 
+  // Evento de clique no botão salvar
   botaoSalvar.addEventListener("click", async () => {
+    // Captura valores dos campos
     const nome = document.querySelector("#nome-professor").value.trim();
     const funcao = document.querySelector("#funcao-professor").value.trim();
     const turma = document.querySelector("#turma-professor").value.trim();
     const disciplina = document.querySelector("#disciplina-professor").value;
     const email = document.querySelector("#email-professor").value.trim().toLowerCase();
-    const telefone = document.querySelector("#telefone-professor").value.trim();
+    const telefoneFormatado = document.querySelector("#telefone-professor").value.trim();
+    const telefone = telefoneFormatado.replace(/\D/g, ""); // remove máscara
     const perfil = document.querySelector("#perfil-professor").value;
     const status = document.querySelector("#status-professor").value;
 
+    // Validação básica
     if (!nome || !funcao || !email) {
       alert("Preencha os campos principais do usuário.");
       return;
     }
 
+    // Validação específica para professor
     if (perfil === "Professor" && !disciplina) {
       alert("Selecione a disciplina do professor.");
       return;
     }
 
+    // Validação do telefone
+    if (telefone && telefone.length < 10) {
+      alert("Telefone inválido.");
+      return;
+    }
+
     try {
+      const emailNormalizado = email.trim().toLowerCase();
+
+      // Verifica se já existe usuário com o mesmo e-mail
       const emailJaExiste = await getDocs(
-        query(collection(db, "usuarios"), where("email", "==", email))
+        query(collection(db, "usuarios"), where("email", "==", emailNormalizado))
       );
 
       if (!emailJaExiste.empty) {
@@ -111,18 +143,20 @@ async function configurarCadastroProfessoresFirestore() {
         return;
       }
 
-      await addDoc(collection(db, "usuarios"), {
+      // Salva usuário no Firestore usando o e-mail como ID
+      await setDoc(doc(db, "usuarios", emailNormalizado), {
         nome,
         funcao,
         turma: perfil === "Pais" ? "" : turma,
         disciplina: perfil === "Professor" ? disciplina : "",
-        email,
+        email: emailNormalizado,
         telefone,
         perfil,
         status,
         criadoEm: new Date().toISOString()
       });
 
+      // Limpa formulário e atualiza lista
       limparFormularioProfessorCadastro();
       await renderizarProfessoresFirestore();
 
@@ -133,11 +167,13 @@ async function configurarCadastroProfessoresFirestore() {
     }
   });
 
+  // Evento do botão limpar
   if (botaoLimpar) {
     botaoLimpar.addEventListener("click", limparFormularioProfessorCadastro);
   }
 }
 
+// Renderiza a lista de usuários autorizados na tabela
 async function renderizarProfessoresFirestore() {
   const lista = document.querySelector("#lista-professores");
   if (!lista) return;
@@ -147,6 +183,7 @@ async function renderizarProfessoresFirestore() {
   try {
     const snapshot = await getDocs(collection(db, "usuarios"));
 
+    // Caso não tenha nenhum usuário
     if (snapshot.empty) {
       lista.innerHTML = `
         <tr>
@@ -158,9 +195,11 @@ async function renderizarProfessoresFirestore() {
 
     let encontrou = false;
 
+    // Percorre todos os usuários
     snapshot.forEach((docSnap) => {
       const usuario = docSnap.data();
 
+      // Filtra apenas perfis válidos
       if (
         usuario.perfil !== "Professor" &&
         usuario.perfil !== "Coordenação" &&
@@ -171,6 +210,7 @@ async function renderizarProfessoresFirestore() {
 
       encontrou = true;
 
+      // Cria linha da tabela
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${usuario.nome || "-"}</td>
@@ -187,6 +227,7 @@ async function renderizarProfessoresFirestore() {
       lista.appendChild(tr);
     });
 
+    // Caso não encontre usuários válidos
     if (!encontrou) {
       lista.innerHTML = `
         <tr>
@@ -196,6 +237,7 @@ async function renderizarProfessoresFirestore() {
       return;
     }
 
+    // Evento de exclusão de usuário
     lista.querySelectorAll(".btn-acao-excluir").forEach((botao) => {
       botao.addEventListener("click", async () => {
         const id = botao.dataset.id;
@@ -214,10 +256,39 @@ async function renderizarProfessoresFirestore() {
     });
   } catch (erro) {
     console.error("Erro ao carregar usuários:", erro);
+
     lista.innerHTML = `
       <tr>
         <td colspan="8">Erro ao carregar usuários autorizados.</td>
       </tr>
     `;
+  }
+}
+
+// Aplica máscara de telefone (formato brasileiro)
+function configurarMascaraTelefoneProfessor() {
+  const campoTelefone = document.querySelector("#telefone-professor");
+
+  if (campoTelefone) {
+    campoTelefone.addEventListener("input", () => {
+      let valor = campoTelefone.value;
+
+      // Remove tudo que não for número
+      valor = valor.replace(/\D/g, "");
+
+      // Limita a 11 dígitos (celular brasileiro)
+      valor = valor.substring(0, 11);
+
+      // Aplica formatação dinâmica
+      if (valor.length > 6) {
+        valor = valor.replace(/^(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3");
+      } else if (valor.length > 2) {
+        valor = valor.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+      } else {
+        valor = valor.replace(/^(\d*)/, "($1");
+      }
+
+      campoTelefone.value = valor;
+    });
   }
 }
