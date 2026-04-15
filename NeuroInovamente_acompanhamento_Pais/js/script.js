@@ -1,32 +1,37 @@
+// Aguarda o carregamento completo do DOM antes de executar as funções iniciais
 document.addEventListener("DOMContentLoaded", () => {
-  configurarNotas();
-  configurarFormularioProfessor();
-  configurarLogin();
-  configurarBotoesPDF();
-  protegerPaginaProfessores();
-  protegerPaginaAlunos();
-  configurarCadastroAlunos();
-  configurarCadastroProfessores();
-  ajustarMenuPorPerfil();
-  protegerPaginaCoordenacao();
-  carregarDashboardCoordenacao();
-  protegerPaginaPais();
-  carregarTotalAlunosProfessor();
-  carregarDisciplinaProfessorPainel();
+  configurarNotas(); // Configura seleção de notas (botões)
+  configurarFormularioProfessor(); // Configura formulário de avaliação do professor
+  configurarLogin(); // Configura lógica de login
+  configurarBotoesPDF(); // Configura botões de impressão (PDF)
+  protegerPaginaProfessores(); // Restringe acesso à página de professores
+  protegerPaginaAlunos(); // Restringe acesso à página de alunos
+  configurarCadastroAlunos(); // Configura cadastro de alunos
+  configurarCadastroProfessores(); // Configura cadastro de professores
+  ajustarMenuPorPerfil(); // Ajusta menu de acordo com o perfil do usuário
+  protegerPaginaCoordenacao(); // Restringe acesso à coordenação
+  carregarDashboardCoordenacao(); // Carrega dados do dashboard da coordenação
+  protegerPaginaPais(); // Restringe acesso ao painel dos pais
+  carregarTotalAlunosProfessor(); // Atualiza total de alunos no painel do professor
+  carregarDisciplinaProfessorPainel(); // Mostra disciplina do professor
 });
 
+// Retorna o usuário logado salvo no localStorage
 function obterUsuarioLogado() {
   return JSON.parse(localStorage.getItem("neurotalk_usuario")) || null;
 }
 
+// Retorna lista de professores do localStorage
 function obterProfessores() {
   return JSON.parse(localStorage.getItem("neurotalk_professores")) || [];
 }
 
+// Retorna lista de alunos do localStorage
 function obterAlunos() {
   return JSON.parse(localStorage.getItem("neurotalk_alunos")) || [];
 }
 
+// Configura seleção de notas (ativa/desativa botões)
 function configurarNotas() {
   const gruposDeNotas = document.querySelectorAll(".notas");
 
@@ -35,13 +40,14 @@ function configurarNotas() {
 
     botoes.forEach((botao) => {
       botao.addEventListener("click", () => {
-        botoes.forEach((b) => b.classList.remove("ativo"));
-        botao.classList.add("ativo");
+        botoes.forEach((b) => b.classList.remove("ativo")); // remove seleção
+        botao.classList.add("ativo"); // adiciona seleção
       });
     });
   });
 }
 
+// Configura formulário de avaliação do professor
 function configurarFormularioProfessor() {
   const botaoSalvar = document.querySelector(".btn-salvar-avaliacao");
   const botaoLimpar = document.querySelector(".btn-limpar-avaliacao");
@@ -49,13 +55,16 @@ function configurarFormularioProfessor() {
   const campoTema = document.querySelector('input[placeholder*="Tema da aula"]');
   const campoEstimulo = document.querySelector('input[placeholder*="Tipo de estímulo"]');
 
+  // Se não existir na página, não executa
   if (!botaoSalvar && !botaoLimpar) return;
 
+  // Evento de salvar avaliação
   if (botaoSalvar) {
     botaoSalvar.addEventListener("click", () => {
       const aluno = document.querySelector(".aluno-topo h4")?.textContent || "Aluno";
       const notasSelecionadas = document.querySelectorAll(".notas .ativo");
 
+      // Validações
       if (!campoTema?.value.trim()) {
         alert("Preencha o tema da aula antes de salvar.");
         return;
@@ -71,6 +80,7 @@ function configurarFormularioProfessor() {
         return;
       }
 
+      // Monta objeto de dados
       const dados = {
         aluno,
         tema: campoTema.value,
@@ -80,11 +90,13 @@ function configurarFormularioProfessor() {
         notas: Array.from(notasSelecionadas).map((nota) => nota.textContent.trim())
       };
 
+      // Salva no localStorage
       localStorage.setItem("neurotalk_avaliacao_atual", JSON.stringify(dados));
       alert(`Avaliação de ${aluno} salva com sucesso no protótipo.`);
     });
   }
 
+  // Evento de limpar formulário
   if (botaoLimpar) {
     botaoLimpar.addEventListener("click", () => {
       if (campoTema) campoTema.value = "";
@@ -99,6 +111,7 @@ function configurarFormularioProfessor() {
   }
 }
 
+// Configura lógica de login
 function configurarLogin() {
   const botaoEntrar = document.querySelector(".btn-entrar-sistema");
   const campoEmail = document.querySelector("#email");
@@ -112,6 +125,7 @@ function configurarLogin() {
     const senha = campoSenha?.value.trim();
     const perfil = campoPerfil?.value;
 
+    // Validações
     if (!email) {
       alert("Preencha o e-mail ou usuário.");
       campoEmail?.focus();
@@ -132,6 +146,7 @@ function configurarLogin() {
 
     const professores = obterProfessores();
 
+    // Login Professor
     if (perfil === "Professor") {
       const professorEncontrado = professores.find(
         (professor) =>
@@ -157,6 +172,7 @@ function configurarLogin() {
       return;
     }
 
+    // Login Coordenação
     if (perfil === "Coordenação") {
       const coordenacaoEncontrada = professores.find(
         (professor) =>
@@ -181,6 +197,7 @@ function configurarLogin() {
       return;
     }
 
+    // Login Pais
     if (perfil === "Pais") {
       const usuario = {
         email,
@@ -193,16 +210,18 @@ function configurarLogin() {
   });
 }
 
+// Configura botão de imprimir PDF
 function configurarBotoesPDF() {
   const botoesPDF = document.querySelectorAll(".btn-baixar-pdf");
 
   botoesPDF.forEach((botao) => {
     botao.addEventListener("click", () => {
-      window.print();
+      window.print(); // Abre janela de impressão
     });
   });
 }
 
+// Protege página de professores (somente coordenação)
 function protegerPaginaProfessores() {
   const estaNaPaginaProfessores = window.location.pathname.includes("professores.html");
 
@@ -216,6 +235,9 @@ function protegerPaginaProfessores() {
   }
 }
 
+// ==================== ALUNOS ====================
+
+// Configura cadastro de alunos
 function configurarCadastroAlunos() {
   const botaoSalvar = document.querySelector("#btn-salvar-aluno");
   const botaoLimpar = document.querySelector("#btn-limpar-aluno");
@@ -223,8 +245,9 @@ function configurarCadastroAlunos() {
 
   if (!botaoSalvar || !lista) return;
 
-  renderizarAlunos();
+  renderizarAlunos(); // Mostra alunos ao carregar
 
+  // Evento salvar aluno
   botaoSalvar.addEventListener("click", () => {
     const nome = document.querySelector("#nome-aluno").value.trim();
     const turma = document.querySelector("#turma-aluno").value.trim();
@@ -235,6 +258,7 @@ function configurarCadastroAlunos() {
     const status = document.querySelector("#status-aluno").value;
     const observacoes = document.querySelector("#obs-aluno").value.trim();
 
+    // Validação
     if (!nome || !turma || !disciplina || !idade || !responsavel) {
       alert("Preencha os campos principais do aluno.");
       return;
@@ -253,18 +277,22 @@ function configurarCadastroAlunos() {
       observacoes
     });
 
+    // Salva no localStorage
     localStorage.setItem("neurotalk_alunos", JSON.stringify(alunos));
+
     limparFormularioAluno();
     renderizarAlunos();
     carregarTotalAlunosProfessor();
     alert("Aluno cadastrado com sucesso.");
   });
 
+  // Evento limpar formulário
   if (botaoLimpar) {
     botaoLimpar.addEventListener("click", limparFormularioAluno);
   }
 }
 
+// Renderiza tabela de alunos
 function renderizarAlunos() {
   const lista = document.querySelector("#lista-alunos");
   if (!lista) return;
@@ -272,6 +300,7 @@ function renderizarAlunos() {
   const alunos = obterAlunos();
   lista.innerHTML = "";
 
+  // Se não houver alunos
   if (alunos.length === 0) {
     lista.innerHTML = `
       <tr>
@@ -281,6 +310,7 @@ function renderizarAlunos() {
     return;
   }
 
+  // Cria linha para cada aluno
   alunos.forEach((aluno) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -298,6 +328,7 @@ function renderizarAlunos() {
   });
 }
 
+// Limpa formulário de aluno
 function limparFormularioAluno() {
   const campos = [
     "#nome-aluno",
@@ -320,6 +351,7 @@ function limparFormularioAluno() {
   if (disciplina) disciplina.value = "";
 }
 
+// Exclui aluno
 function excluirAluno(id) {
   const confirmar = confirm("Deseja realmente excluir este aluno?");
   if (!confirmar) return;
@@ -330,6 +362,9 @@ function excluirAluno(id) {
   carregarTotalAlunosProfessor();
 }
 
+// ==================== PROFESSORES ====================
+
+// Configura cadastro de professores
 function configurarCadastroProfessores() {
   const botaoSalvar = document.querySelector("#btn-salvar-professor");
   const botaoLimpar = document.querySelector("#btn-limpar-professor");
@@ -339,6 +374,7 @@ function configurarCadastroProfessores() {
 
   renderizarProfessores();
 
+  // Evento salvar professor
   botaoSalvar.addEventListener("click", () => {
     const nome = document.querySelector("#nome-professor").value.trim();
     const funcao = document.querySelector("#funcao-professor").value.trim();
@@ -350,6 +386,7 @@ function configurarCadastroProfessores() {
     const perfil = document.querySelector("#perfil-professor").value;
     const status = document.querySelector("#status-professor").value;
 
+    // Validação
     if (!nome || !funcao || !email || !senha) {
       alert("Preencha os campos principais do professor.");
       return;
@@ -380,11 +417,13 @@ function configurarCadastroProfessores() {
     alert("Professor cadastrado com sucesso.");
   });
 
+  // Evento limpar formulário
   if (botaoLimpar) {
     botaoLimpar.addEventListener("click", limparFormularioProfessorCadastro);
   }
 }
 
+// Renderiza tabela de professores
 function renderizarProfessores() {
   const lista = document.querySelector("#lista-professores");
   if (!lista) return;
@@ -419,6 +458,7 @@ function renderizarProfessores() {
   });
 }
 
+// Limpa formulário de professor
 function limparFormularioProfessorCadastro() {
   const campos = [
     "#nome-professor",
@@ -443,6 +483,7 @@ function limparFormularioProfessorCadastro() {
   if (disciplina) disciplina.value = "";
 }
 
+// Exclui professor
 function excluirProfessor(id) {
   const confirmar = confirm("Deseja realmente excluir este professor?");
   if (!confirmar) return;
@@ -452,6 +493,7 @@ function excluirProfessor(id) {
   renderizarProfessores();
 }
 
+// Ajusta menu conforme perfil do usuário
 function ajustarMenuPorPerfil() {
   const usuario = obterUsuarioLogado();
   if (!usuario) return;
@@ -461,6 +503,7 @@ function ajustarMenuPorPerfil() {
   const linksPais = document.querySelectorAll('a[href="painel-pais.html"]');
   const linksAlunos = document.querySelectorAll('a[href="alunos.html"]');
 
+  // Oculta links conforme perfil
   if (usuario.perfil === "Professor") {
     linksProfessores.forEach((link) => link.style.display = "none");
     linksCoordenacao.forEach((link) => link.style.display = "none");
@@ -481,6 +524,7 @@ function ajustarMenuPorPerfil() {
   }
 }
 
+// Protege página da coordenação
 function protegerPaginaCoordenacao() {
   const estaNaPaginaCoordenacao = window.location.pathname.includes("dashboard-coordenacao.html");
 
@@ -494,6 +538,7 @@ function protegerPaginaCoordenacao() {
   }
 }
 
+// Carrega dados no dashboard da coordenação
 function carregarDashboardCoordenacao() {
   const totalAlunosEl = document.querySelector("#total-alunos");
   const totalProfessoresEl = document.querySelector("#total-professores");
@@ -502,6 +547,7 @@ function carregarDashboardCoordenacao() {
   const listaTurmasEl = document.querySelector("#lista-turmas");
   const resumoCoordenacaoEl = document.querySelector("#resumo-coordenacao");
 
+  // Se não estiver na página, não executa
   if (
     !totalAlunosEl ||
     !totalProfessoresEl ||
@@ -517,12 +563,14 @@ function carregarDashboardCoordenacao() {
   const professores = obterProfessores();
   const avaliacaoAtual = JSON.parse(localStorage.getItem("neurotalk_avaliacao_atual"));
 
+  // Atualiza totais
   totalAlunosEl.textContent = alunos.length;
   totalProfessoresEl.textContent = professores.length;
   totalAvaliacoesEl.textContent = avaliacaoAtual ? "1" : "0";
 
   const turmasMap = {};
 
+  // Agrupa alunos por turma
   alunos.forEach((aluno) => {
     const turma = aluno.turma?.trim() || "Sem turma";
     if (!turmasMap[turma]) {
@@ -535,6 +583,7 @@ function carregarDashboardCoordenacao() {
     turmasMap[turma].quantidadeAlunos += 1;
   });
 
+  // Associa professores às turmas
   professores.forEach((professor) => {
     const turma = professor.turma?.trim();
     if (turma) {
@@ -555,6 +604,7 @@ function carregarDashboardCoordenacao() {
 
   listaTurmasEl.innerHTML = "";
 
+  // Renderiza tabela de turmas
   if (turmas.length === 0) {
     listaTurmasEl.innerHTML = `
       <tr>
@@ -574,6 +624,7 @@ function carregarDashboardCoordenacao() {
     });
   }
 
+  // Gera resumo automático
   let resumo = `Atualmente o sistema possui ${alunos.length} aluno(s), ${professores.length} professor(es) e ${turmas.length} turma(s) ativa(s).`;
 
   if (avaliacaoAtual) {
@@ -583,6 +634,7 @@ function carregarDashboardCoordenacao() {
   resumoCoordenacaoEl.textContent = resumo;
 }
 
+// Protege página dos pais
 function protegerPaginaPais() {
   const paginaAtual = window.location.pathname.split("/").pop();
 
@@ -596,6 +648,7 @@ function protegerPaginaPais() {
   }
 }
 
+// Protege página de alunos
 function protegerPaginaAlunos() {
   const paginaAtual = window.location.pathname.split("/").pop();
 
@@ -609,6 +662,7 @@ function protegerPaginaAlunos() {
   }
 }
 
+// Atualiza total de alunos no painel do professor
 function carregarTotalAlunosProfessor() {
   const campoTotal = document.querySelector("#total-alunos-professor");
   if (!campoTotal) return;
@@ -629,6 +683,7 @@ function carregarTotalAlunosProfessor() {
   campoTotal.textContent = alunosDaDisciplina.length;
 }
 
+// Mostra disciplina do professor no painel
 function carregarDisciplinaProfessorPainel() {
   const campoDisciplina = document.querySelector("#disciplina-professor-painel");
   if (!campoDisciplina) return;
