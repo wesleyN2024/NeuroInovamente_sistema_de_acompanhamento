@@ -1,4 +1,7 @@
+// Importa a instância do banco de dados Firebase
 import { db } from "./firebase-config.js";
+
+// Importa funções do Firestore para manipular documentos e coleções
 import {
   collection,
   addDoc,
@@ -9,18 +12,22 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+// Executa as funções iniciais quando o DOM terminar de carregar
 document.addEventListener("DOMContentLoaded", () => {
   protegerPaginaAlunos();
   ajustarMenuPorPerfil();
   configurarCadastroAlunosFirestore();
   carregarTotalAlunosProfessorFirestore();
   carregarDisciplinaProfessorPainel();
+  configurarMascaraTelefoneAluno();
 });
 
+// Retorna o usuário logado salvo no localStorage
 function obterUsuarioLogado() {
   return JSON.parse(localStorage.getItem("neurotalk_usuario")) || null;
 }
 
+// Protege a página de alunos, permitindo acesso apenas para coordenação
 function protegerPaginaAlunos() {
   const paginaAtual = window.location.pathname.split("/").pop();
 
@@ -34,6 +41,7 @@ function protegerPaginaAlunos() {
   }
 }
 
+// Ajusta a visibilidade do menu conforme o perfil do usuário
 function ajustarMenuPorPerfil() {
   const usuario = obterUsuarioLogado();
   if (!usuario) return;
@@ -51,6 +59,7 @@ function ajustarMenuPorPerfil() {
   }
 }
 
+// Limpa os campos do formulário de aluno
 function limparFormularioAluno() {
   const ids = [
     "#nome-aluno",
@@ -74,6 +83,7 @@ function limparFormularioAluno() {
   if (disciplina) disciplina.value = "";
 }
 
+// Configura o cadastro de alunos usando Firestore
 async function configurarCadastroAlunosFirestore() {
   const botaoSalvar = document.querySelector("#btn-salvar-aluno");
   const botaoLimpar = document.querySelector("#btn-limpar-aluno");
@@ -93,12 +103,20 @@ async function configurarCadastroAlunosFirestore() {
       .querySelector("#email-responsavel-aluno")
       .value.trim()
       .toLowerCase();
-    const contato = document.querySelector("#contato-aluno").value.trim();
+
+    const contatoFormatado = document.querySelector("#contato-aluno").value.trim();
+    const contato = contatoFormatado.replace(/\D/g, "");
+
     const status = document.querySelector("#status-aluno").value;
     const observacoes = document.querySelector("#obs-aluno").value.trim();
 
     if (!nome || !turma || !disciplina || !idade || !responsavel || !responsavelEmail) {
       alert("Preencha os campos principais do aluno.");
+      return;
+    }
+
+    if (contato && contato.length < 10) {
+      alert("Telefone do responsável inválido.");
       return;
     }
 
@@ -131,6 +149,7 @@ async function configurarCadastroAlunosFirestore() {
   }
 }
 
+// Renderiza a lista de alunos cadastrados na tabela
 async function renderizarAlunosFirestore() {
   const lista = document.querySelector("#lista-alunos");
   if (!lista) return;
@@ -200,6 +219,7 @@ async function renderizarAlunosFirestore() {
   }
 }
 
+// Carrega a quantidade de alunos da disciplina do professor logado
 async function carregarTotalAlunosProfessorFirestore() {
   const campoTotal = document.querySelector("#total-alunos-professor");
   if (!campoTotal) return;
@@ -225,6 +245,7 @@ async function carregarTotalAlunosProfessorFirestore() {
   }
 }
 
+// Mostra a disciplina do professor no painel
 function carregarDisciplinaProfessorPainel() {
   const campoDisciplina = document.querySelector("#disciplina-professor-painel");
   if (!campoDisciplina) return;
@@ -237,4 +258,30 @@ function carregarDisciplinaProfessorPainel() {
   }
 
   campoDisciplina.textContent = usuario.disciplina || "Não definida";
+}
+
+// Aplica máscara de telefone no campo de contato do aluno
+function configurarMascaraTelefoneAluno() {
+  const campoTelefone = document.querySelector("#contato-aluno");
+
+  if (!campoTelefone) return;
+
+  campoTelefone.addEventListener("input", () => {
+    let valor = campoTelefone.value;
+
+    valor = valor.replace(/\D/g, "");
+    valor = valor.substring(0, 11);
+
+    if (valor.length > 10) {
+      valor = valor.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
+    } else if (valor.length > 6) {
+      valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+    } else if (valor.length > 2) {
+      valor = valor.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+    } else if (valor.length > 0) {
+      valor = valor.replace(/^(\d*)/, "($1");
+    }
+
+    campoTelefone.value = valor;
+  });
 }
