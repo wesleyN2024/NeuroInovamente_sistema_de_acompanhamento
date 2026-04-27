@@ -95,7 +95,11 @@ async function buscarUsuarioPorEmail(email) {
 async function buscarAlunoPorEmailResponsavel(emailResponsavel) {
   const emailNormalizado = emailResponsavel.trim().toLowerCase();
 
-  const q = query(collection(db, "alunos"), where("responsavelEmail", "==", emailNormalizado));
+  const q = query(
+    collection(db, "alunos"),
+    where("responsavelId", "==", emailNormalizado)
+  );
+
   const snapshot = await getDocs(q);
 
   if (snapshot.empty) return null;
@@ -106,15 +110,14 @@ async function buscarAlunoPorEmailResponsavel(emailResponsavel) {
   };
 }
 
-// Busca relatórios do aluno
-async function buscarRelatoriosAluno(alunoId, emailResponsavel) {
-  const emailNormalizado = emailResponsavel.trim().toLowerCase();
 
+// Busca relatórios do aluno
+async function buscarRelatoriosAluno(alunoId) {
   const q = query(
     collection(db, "relatorios"),
-    where("alunoId", "==", alunoId),
-    where("responsavelEmail", "==", emailNormalizado)
+    where("alunoId", "==", alunoId)
   );
+
   const snapshot = await getDocs(q);
 
   const lista = [];
@@ -132,14 +135,12 @@ async function buscarRelatoriosAluno(alunoId, emailResponsavel) {
 }
 
 // Busca presenças do aluno
-async function buscarPresencasAluno(alunoId, emailResponsavel) {
-  const emailNormalizado = emailResponsavel.trim().toLowerCase();
-
+async function buscarPresencasAluno(alunoId) {
   const q = query(
     collection(db, "presencas"),
-    where("alunoId", "==", alunoId),
-    where("responsavelEmail", "==", emailNormalizado)
+    where("alunoId", "==", alunoId)
   );
+
   const snapshot = await getDocs(q);
 
   const lista = [];
@@ -415,8 +416,8 @@ async function carregarPainelPais() {
     }
 
     // Busca dados adicionais
-    const relatorios = await buscarRelatoriosAluno(aluno.id, usuarioBanco.email);
-    const presencas = await buscarPresencasAluno(aluno.id, usuarioBanco.email);
+    const relatorios = await buscarRelatoriosAluno(aluno.id);
+    const presencas = await buscarPresencasAluno(aluno.id);
 
     // Preenche interface
     preencherTabelaRelatorios(relatorios);
