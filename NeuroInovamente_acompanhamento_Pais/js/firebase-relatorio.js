@@ -19,6 +19,7 @@ const btnPdf = document.querySelector(".btn-baixar-pdf");
 // Variáveis para armazenar os gráficos e permitir atualização
 let graficoPresencaRelatorio = null;
 let graficoDesenvolvimentoRelatorio = null;
+let graficoAreasNeurocognitivas = null;
 
 // Função para obter o usuário logado salvo no localStorage
 function obterUsuarioLogado() {
@@ -29,21 +30,14 @@ function obterUsuarioLogado() {
 async function buscarUsuarioPorEmail(email) {
   const emailNormalizado = email.trim().toLowerCase();
 
-  // Cria uma consulta na coleção "usuarios"
-  const q = query(
-    collection(db, "usuarios"),
-    where("email", "==", emailNormalizado)
-  );
+  const usuarioRef = doc(db, "usuarios", emailNormalizado);
+  const usuarioSnap = await getDoc(usuarioRef);
 
-  const snapshot = await getDocs(q);
+  if (!usuarioSnap.exists()) return null;
 
-  // Se não encontrar nenhum resultado
-  if (snapshot.empty) return null;
-
-  // Retorna o primeiro usuário encontrado
   return {
-    id: snapshot.docs[0].id,
-    ...snapshot.docs[0].data()
+    id: usuarioSnap.id,
+    ...usuarioSnap.data()
   };
 }
 
@@ -175,7 +169,6 @@ function preencherRelatorio(aluno) {
   document.querySelector("#relatorio-disciplina").textContent = aluno.disciplina || "-";
   document.querySelector("#relatorio-status").textContent = aluno.status || "-";
 
-  // Textos automáticos gerados com base nos dados
   document.querySelector("#texto-linguistica").textContent =
     `O aluno ${aluno.nome || "selecionado"} está vinculado à disciplina ${aluno.disciplina || "não informada"} e apresenta acompanhamento registrado no sistema.`;
 
@@ -191,19 +184,16 @@ function preencherRelatorio(aluno) {
     `Relatório individual gerado para ${aluno.nome || "o aluno"}, responsável: ${aluno.responsavel || "não informado"}.`;
 }
 
-// Renderiza gráfico de presença (pizza/doughnut)
+// Renderiza gráfico de presença
 function renderizarGraficoPresenca(presencas) {
   const canvas = document.querySelector("#grafico-presenca-relatorio");
   if (!canvas || !window.Chart) return;
 
-  // Conta presença e faltas
   const presentes = presencas.filter((item) => item.status === "Presente").length;
   const faltas = presencas.filter((item) => item.status === "Faltou").length;
 
-  // Destroi gráfico anterior se existir
   if (graficoPresencaRelatorio) graficoPresencaRelatorio.destroy();
 
-  // Cria novo gráfico
   graficoPresencaRelatorio = new Chart(canvas, {
     type: "doughnut",
     data: {
@@ -228,15 +218,12 @@ function renderizarGraficoDesenvolvimento(relatorios) {
   const canvas = document.querySelector("#grafico-desenvolvimento-relatorio");
   if (!canvas || !window.Chart) return;
 
-  // Filtra relatórios válidos e ordena por data
   const relatoriosComNota = relatorios
     .filter((item) => Number(item.nivelDesenvolvimento) > 0)
     .sort((a, b) => (a.dataAula || "").localeCompare(b.dataAula || ""));
 
-  // Destroi gráfico anterior se existir
   if (graficoDesenvolvimentoRelatorio) graficoDesenvolvimentoRelatorio.destroy();
 
-  // Cria gráfico de linha
   graficoDesenvolvimentoRelatorio = new Chart(canvas, {
     type: "line",
     data: {
@@ -261,19 +248,114 @@ function renderizarGraficoDesenvolvimento(relatorios) {
   });
 }
 
+// Renderiza gráfico das áreas neurocognitivas avaliadas
+function renderizarGraficoAreasNeurocognitivas(relatorios) {
+  const canvas = document.querySelector("#grafico-areas-neurocognitivas");
+  if (!canvas || !window.Chart) return;
+
+  const relatoriosComAvaliacao = relatorios.filter((item) => item.avaliacaoNeurocognitiva);
+
+  if (!relatoriosComAvaliacao.length) {
+    return;
+  }
+
+  let soma = {
+    coordenacao: 0,
+    linguagem: 0,
+    emocional: 0,
+    memoria: 0,
+    integracao: 0
+  };
+
+  relatoriosComAvaliacao.forEach((item) => {
+    soma.coordenacao += Number(item.avaliacaoNeurocognitiva.coordenacao || 0);
+    soma.linguagem += Number(item.avaliacaoNeurocognitiva.linguagem || 0);
+    soma.emocional += Number(item.avaliacaoNeurocognitiva.emocional || 0);
+    soma.memoria += Number(item.avaliacaoNeurocognitiva.memoria || 0);
+    soma.integracao += Number(item.avaliacaoNeurocognitiva.integracao || 0);
+  });
+
+  const total = relatoriosComAvaliacao.length;
+
+  const dados = [
+    soma.coordenacao / total,
+    soma.linguagem / total,
+    soma.emocional / total,
+    soma.memoria / total,
+    soma.integracao / total
+  ];
+
+  if (graficoAreasNeurocognitivas) {
+    graficoAreasNeurocognitivas.destroy();
+  }
+
+  graficoAreasNeurocognitivas = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: [
+        "Coordenação",
+        "Linguagem",
+        "Emocional",
+        "Memória",
+        "Integração"
+      ],
+      datasets: [{
+        label: "Média das avaliações",
+        data: dados,
+        backgroundColor: "rgba(147, 190, 232, 0.9)",
+        borderRadius: 4,
+        barThickness: 48
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom"
+        },
+        title: {
+          display: true,
+          text: "Áreas Neurocognitivas Avaliadas",
+          font: {
+            size: 20,
+            weight: "bold"
+          },
+          color: "#666"
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 2,
+          ticks: {
+            stepSize: 1
+          },
+          grid: {
+            color: "#e5e5e5"
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
+
 // Carrega histórico de relatórios do aluno
 async function carregarHistoricoRelatorios(alunoId) {
   const tbody = document.querySelector("#lista-historico-relatorios");
   if (!tbody) return [];
 
   try {
-    // Consulta no Firestore
     const q = query(collection(db, "relatorios"), where("alunoId", "==", alunoId));
     const snapshot = await getDocs(q);
 
     const lista = [];
 
-    // Monta lista de relatórios
     snapshot.forEach((docSnap) => {
       lista.push({
         id: docSnap.id,
@@ -281,11 +363,9 @@ async function carregarHistoricoRelatorios(alunoId) {
       });
     });
 
-    // Ordena por data (mais recente primeiro)
     lista.sort((a, b) => (b.dataAula || "").localeCompare(a.dataAula || ""));
     tbody.innerHTML = "";
 
-    // Caso não haja dados
     if (!lista.length) {
       tbody.innerHTML = `
         <tr>
@@ -295,7 +375,6 @@ async function carregarHistoricoRelatorios(alunoId) {
       return [];
     }
 
-    // Preenche tabela
     lista.forEach((item) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -378,7 +457,6 @@ async function carregarHistoricoPresencas(alunoId) {
 async function gerarPdfReal() {
   const areaRelatorio = document.querySelector(".relatorio");
 
-  // Verifica se as bibliotecas foram carregadas
   if (!areaRelatorio || !window.jspdf || !window.html2canvas) {
     alert("Bibliotecas de PDF não carregadas.");
     return;
@@ -386,12 +464,10 @@ async function gerarPdfReal() {
 
   const nomeAluno = document.querySelector("#relatorio-nome")?.textContent?.trim() || "aluno";
 
-  // Desativa botão durante geração
   btnPdf.disabled = true;
   btnPdf.textContent = "Gerando PDF...";
 
   try {
-    // Captura a tela como imagem
     const canvas = await window.html2canvas(areaRelatorio, {
       scale: 2,
       useCORS: true,
@@ -400,11 +476,9 @@ async function gerarPdfReal() {
 
     const imgData = canvas.toDataURL("image/png");
 
-    // Cria o PDF
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF("p", "mm", "a4");
 
-    // Ajustes de tamanho
     const pdfWidth = 210;
     const pdfHeight = 297;
     const margin = 10;
@@ -415,11 +489,9 @@ async function gerarPdfReal() {
     let heightLeft = imgHeight;
     let position = margin;
 
-    // Adiciona imagem ao PDF
     pdf.addImage(imgData, "PNG", margin, position, usableWidth, imgHeight);
     heightLeft -= (pdfHeight - margin * 2);
 
-    // Caso precise de múltiplas páginas
     while (heightLeft > 0) {
       position = heightLeft - imgHeight + margin;
       pdf.addPage();
@@ -427,13 +499,11 @@ async function gerarPdfReal() {
       heightLeft -= (pdfHeight - margin * 2);
     }
 
-    // Salva o PDF
     pdf.save(`relatorio-${nomeAluno}.pdf`);
   } catch (erro) {
     console.error("Erro ao gerar PDF:", erro);
     alert("Não foi possível gerar o PDF.");
   } finally {
-    // Reativa botão
     btnPdf.disabled = false;
     btnPdf.textContent = "Baixar PDF";
   }
@@ -443,14 +513,12 @@ async function gerarPdfReal() {
 async function carregarRelatorioAluno() {
   const usuario = obterUsuarioLogado();
 
-  // Se não estiver logado
   if (!usuario) {
     alert("Faça login para acessar o relatório.");
     window.location.href = "login.html";
     return;
   }
 
-  // Obtém ID do aluno pela URL
   const params = new URLSearchParams(window.location.search);
   const alunoId = params.get("id");
 
@@ -466,7 +534,6 @@ async function carregarRelatorioAluno() {
   }
 
   try {
-    // Busca aluno no banco
     const alunoRef = doc(db, "alunos", alunoId);
     const alunoSnap = await getDoc(alunoRef);
 
@@ -478,21 +545,23 @@ async function carregarRelatorioAluno() {
 
     const aluno = alunoSnap.data();
 
-    // Permissão para coordenação e professor
     if (usuario.perfil === "Coordenação" || usuario.perfil === "Professor") {
       const blocoSelecao = document.querySelector("#bloco-selecao-relatorio");
       if (blocoSelecao) blocoSelecao.style.display = "none";
 
       alternarExibicaoConteudoRelatorio(true);
       preencherRelatorio(aluno);
+
       const relatorios = await carregarHistoricoRelatorios(alunoId);
       const presencas = await carregarHistoricoPresencas(alunoId);
+
       renderizarGraficoPresenca(presencas);
       renderizarGraficoDesenvolvimento(relatorios);
+      renderizarGraficoAreasNeurocognitivas(relatorios);
+
       return;
     }
 
-    // Permissão para pais
     if (usuario.perfil === "Pais") {
       const usuarioBanco = await buscarUsuarioPorEmail(usuario.email);
 
@@ -511,7 +580,6 @@ async function carregarRelatorioAluno() {
       const emailUsuario = (usuario.email || "").trim().toLowerCase();
       const emailResponsavelAluno = (aluno.responsavelEmail || "").trim().toLowerCase();
 
-      // Verifica se o responsável é realmente o dono do aluno
       if (!emailUsuario || !emailResponsavelAluno || emailUsuario !== emailResponsavelAluno) {
         alert("Você não tem permissão para visualizar este relatório.");
         window.location.href = "painel-pais.html";
@@ -523,14 +591,17 @@ async function carregarRelatorioAluno() {
 
       alternarExibicaoConteudoRelatorio(true);
       preencherRelatorio(aluno);
+
       const relatorios = await carregarHistoricoRelatorios(alunoId);
       const presencas = await carregarHistoricoPresencas(alunoId);
+
       renderizarGraficoPresenca(presencas);
       renderizarGraficoDesenvolvimento(relatorios);
+      renderizarGraficoAreasNeurocognitivas(relatorios);
+
       return;
     }
 
-    // Caso não tenha permissão
     alert("Perfil sem permissão para acessar o relatório.");
     window.location.href = "login.html";
   } catch (erro) {
@@ -541,10 +612,8 @@ async function carregarRelatorioAluno() {
   }
 }
 
-// Evento do botão de PDF
 if (btnPdf) {
   btnPdf.addEventListener("click", gerarPdfReal);
 }
 
-// Inicializa o carregamento do relatório ao abrir a página
 carregarRelatorioAluno();
