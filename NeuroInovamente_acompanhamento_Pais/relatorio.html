@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- Define a codificação -->
   <meta charset="UTF-8" />
+  
+  <!-- Configuração responsiva -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Título da página -->
   <title>NeuroInovaMente | Relatório</title>
+  
+  <!-- Importa o CSS -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- Cabeçalho -->
   <header class="topo">
     <div class="container nav">
       <div class="logo">NeuroInovaMente</div>
+
+      <!-- Navegação -->
       <nav class="menu">
         <a href="index.html">Início</a>
         <a href="login.html">Login</a>
@@ -18,18 +28,47 @@
     </div>
   </header>
 
+  <!-- Conteúdo -->
   <main class="secao">
     <div class="container">
       <section class="relatorio">
+
+        <!-- Topo do relatório -->
         <div class="relatorio-topo">
           <div>
             <span class="tag tag-pequena">Relatório mensal</span>
             <h2>Relatório de Desenvolvimento NeuroInovaMente</h2>
             <p id="relatorio-topo-aluno">Carregando dados do aluno...</p>
           </div>
+
+          <!-- Botão para gerar PDF -->
           <button class="btn btn-primario btn-baixar-pdf">Baixar PDF</button>
         </div>
 
+        <!-- Seleção de aluno -->
+        <div class="card-relatorio margem-topo" id="bloco-selecao-relatorio" style="display: none;">
+          <h4>Selecionar aluno</h4>
+          <p id="texto-selecao-relatorio">
+            Escolha o aluno para visualizar o relatório.
+          </p>
+
+          <div class="linha-campos" style="margin-top: 16px;">
+            <div>
+              <label for="select-aluno-relatorio-pagina">Aluno</label>
+              <select id="select-aluno-relatorio-pagina">
+                <option value="">Selecione o aluno</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="acoes">
+            <button type="button" class="btn btn-primario" id="btn-abrir-relatorio-selecionado">
+              Abrir relatório
+            </button>
+          </div>
+        </div>
+
+        <!-- Grid inicial -->
         <div class="relatorio-grid">
           <div class="card-relatorio">
             <h4>Dados gerais</h4>
@@ -40,30 +79,27 @@
           </div>
 
           <div class="card-relatorio">
-            <h4>Radar de Desenvolvimento</h4>
-            <div class="grafico-falso radar pequeno">
-              <div class="circulo c1"></div>
-              <div class="circulo c2"></div>
-              <div class="circulo c3"></div>
-              <div class="linha linha1"></div>
-              <div class="linha linha2"></div>
-              <div class="linha linha3"></div>
-            </div>
+            <h4>Gráfico de Presença</h4>
+            <canvas id="grafico-presenca-relatorio"></canvas>
           </div>
         </div>
 
+        <!-- Evolução -->
         <div class="card-relatorio margem-topo">
-          <h4>Evolução Trimestral</h4>
-          <div class="grafico-falso linhas">
-            <div class="eixo"></div>
-            <div class="ponto p1"></div>
-            <div class="ponto p2"></div>
-            <div class="ponto p3"></div>
-            <div class="traco t1"></div>
-            <div class="traco t2"></div>
-          </div>
+          <h4>Evolução do Desenvolvimento</h4>
+          <canvas id="grafico-desenvolvimento-relatorio"></canvas>
         </div>
 
+        <!-- NOVO: Gráfico de áreas neurocognitivas -->
+        <div class="card-relatorio margem-topo">
+          <h4>Áreas Neurocognitivas Avaliadas</h4>
+          <p style="font-size:14px; opacity:0.8;">
+            Escala: 0 = Em desenvolvimento | 1 = Desenvolvimento adequado | 2 = Excelente desenvolvimento
+          </p>
+          <canvas id="grafico-areas-neurocognitivas"></canvas>
+        </div>
+
+        <!-- Textos descritivos -->
         <div class="relatorio-grid margem-topo">
           <div class="card-relatorio">
             <h4>Aquisição Linguística</h4>
@@ -94,14 +130,65 @@
           </div>
         </div>
 
+        <!-- Histórico de relatórios -->
+        <div class="tabela-box margem-topo">
+          <h4>Histórico de relatórios</h4>
+          <div class="tabela-responsiva">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Professor</th>
+                  <th>Nível</th>
+                  <th>Desenvolvimento</th>
+                  <th>Observações</th>
+                </tr>
+              </thead>
+              <tbody id="lista-historico-relatorios">
+                <tr>
+                  <td colspan="5">Carregando histórico...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Histórico de presença -->
+        <div class="tabela-box margem-topo">
+          <h4>Histórico de presença</h4>
+          <div class="tabela-responsiva">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Professor</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="lista-historico-presencas">
+                <tr>
+                  <td colspan="3">Carregando presença...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rodapé -->
         <div class="rodape-relatorio">
           <p><strong>Responsável Técnica:</strong> Josemary Palmeira da Costa</p>
-          <p>Documento gerado automaticamente via Sistema NeuroTalk.</p>
+          <p>Documento gerado automaticamente via Sistema NeuroInovaMente.</p>
         </div>
       </section>
     </div>
   </main>
 
+  <!-- Bibliotecas externas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Script do relatório -->
   <script type="module" src="js/firebase-relatorio.js"></script>
 </body>
 </html>
