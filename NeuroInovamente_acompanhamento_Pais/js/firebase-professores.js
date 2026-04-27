@@ -105,6 +105,7 @@ async function configurarCadastroProfessoresFirestore() {
     const nome = document.querySelector("#nome-professor").value.trim();
     const funcao = document.querySelector("#funcao-professor").value.trim();
     const turma = document.querySelector("#turma-professor").value.trim();
+    const turmas = turma.split(",").map((item) => item.trim()).filter((item) => item !== "");
     const disciplina = document.querySelector("#disciplina-professor").value;
     const email = document.querySelector("#email-professor").value.trim().toLowerCase();
     const telefoneFormatado = document.querySelector("#telefone-professor").value.trim();
@@ -148,6 +149,7 @@ async function configurarCadastroProfessoresFirestore() {
         nome,
         funcao,
         turma: perfil === "Pais" ? "" : turma,
+        turmas: perfil === "Professor" ? turmas : [],
         disciplina: perfil === "Professor" ? disciplina : "",
         email: emailNormalizado,
         telefone,
@@ -173,7 +175,8 @@ async function configurarCadastroProfessoresFirestore() {
   }
 }
 
-// Renderiza a lista de usuários autorizados na tabela
+
+// Renderiza a lista de usuários autorizados separada por perfil
 async function renderizarProfessoresFirestore() {
   const lista = document.querySelector("#lista-professores");
   if (!lista) return;
@@ -183,7 +186,6 @@ async function renderizarProfessoresFirestore() {
   try {
     const snapshot = await getDocs(collection(db, "usuarios"));
 
-    // Caso não tenha nenhum usuário
     if (snapshot.empty) {
       lista.innerHTML = `
         <tr>
@@ -193,42 +195,70 @@ async function renderizarProfessoresFirestore() {
       return;
     }
 
-    let encontrou = false;
+    const grupos = {
+      Professor: [],
+      "Coordenação": [],
+      Pais: []
+    };
 
-    // Percorre todos os usuários
     snapshot.forEach((docSnap) => {
-      const usuario = docSnap.data();
+      const usuario = {
+        id: docSnap.id,
+        ...docSnap.data()
+      };
 
-      // Filtra apenas perfis válidos
-      if (
-        usuario.perfil !== "Professor" &&
-        usuario.perfil !== "Coordenação" &&
-        usuario.perfil !== "Pais"
-      ) {
-        return;
+      if (grupos[usuario.perfil]) {
+        grupos[usuario.perfil].push(usuario);
       }
-
-      encontrou = true;
-
-      // Cria linha da tabela
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${usuario.nome || "-"}</td>
-        <td>${usuario.funcao || "-"}</td>
-        <td>${usuario.turma || "-"}</td>
-        <td>${usuario.disciplina || "-"}</td>
-        <td>${usuario.email || "-"}</td>
-        <td>${usuario.perfil || "-"}</td>
-        <td>${usuario.status || "-"}</td>
-        <td>
-          <button class="btn-acao-excluir" data-id="${docSnap.id}">Excluir</button>
-        </td>
-      `;
-      lista.appendChild(tr);
+    });
+    // 🔥 Ordena alfabeticamente por nome
+    Object.keys(grupos).forEach((perfil) => {
+      grupos[perfil].sort((a, b) => {
+        return (a.nome || "").localeCompare(b.nome || "", "pt-BR");
+      });
     });
 
-    // Caso não encontre usuários válidos
-    if (!encontrou) {
+    const renderizarTituloGrupo = (titulo) => {
+      lista.innerHTML += `
+        <tr class="linha-grupo">
+          <td colspan="8">${titulo}</td>
+        </tr>
+      `;
+    };
+
+    const renderizarUsuario = (usuario) => {
+      lista.innerHTML += `
+        <tr>
+          <td>${usuario.nome || "-"}</td>
+          <td>${usuario.funcao || "-"}</td>
+          <td>${usuario.turma || "-"}</td>
+          <td>${usuario.disciplina || "-"}</td>
+          <td>${usuario.email || "-"}</td>
+          <td>${usuario.perfil || "-"}</td>
+          <td>${usuario.status || "-"}</td>
+          <td>
+            <button class="btn-acao-excluir" data-id="${usuario.id}">Excluir</button>
+          </td>
+        </tr>
+      `;
+    };
+
+    if (grupos.Professor.length) {
+      renderizarTituloGrupo("Professores");
+      grupos.Professor.forEach(renderizarUsuario);
+    }
+
+    if (grupos["Coordenação"].length) {
+      renderizarTituloGrupo("Coordenação");
+      grupos["Coordenação"].forEach(renderizarUsuario);
+    }
+
+    if (grupos.Pais.length) {
+      renderizarTituloGrupo("Pais / Responsáveis");
+      grupos.Pais.forEach(renderizarUsuario);
+    }
+
+    if (!grupos.Professor.length && !grupos["Coordenação"].length && !grupos.Pais.length) {
       lista.innerHTML = `
         <tr>
           <td colspan="8">Nenhum usuário autorizado ainda.</td>
@@ -237,7 +267,6 @@ async function renderizarProfessoresFirestore() {
       return;
     }
 
-    // Evento de exclusão de usuário
     lista.querySelectorAll(".btn-acao-excluir").forEach((botao) => {
       botao.addEventListener("click", async () => {
         const id = botao.dataset.id;
