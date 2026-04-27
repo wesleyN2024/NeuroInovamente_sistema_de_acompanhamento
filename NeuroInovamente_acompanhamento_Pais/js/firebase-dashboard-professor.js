@@ -30,8 +30,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Obtém o usuário logado do localStorage
 function obterUsuarioLogado() {
   return JSON.parse(localStorage.getItem("neurotalk_usuario")) || null;
-}
+  function obterTurmasDoProfessor(usuario) {
+    if (Array.isArray(usuario.turmas) && usuario.turmas.length > 0) {
+      return usuario.turmas;
+    }
 
+    if (usuario.turma) {
+      return [usuario.turma];
+    }
+
+    return [];
+  }
+}
 // Protege a página para que apenas professores acessem
 function protegerPaginaProfessor() {
   const paginaAtual = window.location.pathname.split("/").pop();
@@ -110,10 +120,22 @@ async function carregarDashboardProfessor() {
 
   try {
     // Busca alunos da mesma disciplina
-    const q = query(
-      collection(db, "alunos"),
-      where("disciplina", "==", usuario.disciplina || "")
-    );
+    const turmasProfessor = obterTurmasDoProfessor(usuario);
+
+    let q;
+
+    if (turmasProfessor.length > 0) {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || ""),
+        where("turma", "in", turmasProfessor)
+      );
+    } else {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || "")
+      );
+    }
 
     const snapshot = await getDocs(q);
     const totalAlunos = snapshot.size;
@@ -153,10 +175,22 @@ async function carregarAlunosDaDisciplina() {
 
   try {
     // Consulta alunos da disciplina
-    const q = query(
-      collection(db, "alunos"),
-      where("disciplina", "==", usuario.disciplina || "")
-    );
+    const turmasProfessor = obterTurmasDoProfessor(usuario);
+
+    let q;
+
+    if (turmasProfessor.length > 0) {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || ""),
+        where("turma", "in", turmasProfessor)
+      );
+    } else {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || "")
+      );
+    }
 
     const snapshot = await getDocs(q);
 
@@ -259,6 +293,14 @@ function configurarSalvarRelatorio() {
     const alunoId = document.querySelector("#select-aluno-relatorio")?.value || "";
     const dataAula = document.querySelector("#data-aula-relatorio")?.value || "";
     const nivelDesenvolvimento = Number(document.querySelector("#nivel-desenvolvimento-relatorio")?.value || 0);
+
+    // NOVO: Captura avaliação neurocognitiva
+    const coordenacao = document.querySelector("#avaliacao-coordenacao")?.value;
+    const linguagem = document.querySelector("#avaliacao-linguagem")?.value;
+    const emocional = document.querySelector("#avaliacao-emocional")?.value;
+    const memoria = document.querySelector("#avaliacao-memoria")?.value;
+    const integracao = document.querySelector("#avaliacao-integracao")?.value;
+
     const desenvolvimento = document.querySelector("#desenvolvimento-relatorio")?.value.trim() || "";
     const observacoes = document.querySelector("#obs-relatorio")?.value.trim() || "";
     const mensagem = document.querySelector("#mensagem-relatorio");
@@ -266,8 +308,20 @@ function configurarSalvarRelatorio() {
     if (!usuario || usuario.perfil !== "Professor") return;
 
     // Validação
-    if (!alunoId || !dataAula || !desenvolvimento || !nivelDesenvolvimento) {
-      if (mensagem) mensagem.textContent = "Selecione o aluno, a data, o nível e escreva o desenvolvimento.";
+    if (
+      !alunoId ||
+      !dataAula ||
+      !desenvolvimento ||
+      !nivelDesenvolvimento ||
+      coordenacao === "" ||
+      linguagem === "" ||
+      emocional === "" ||
+      memoria === "" ||
+      integracao === ""
+    ) {
+      if (mensagem) {
+        mensagem.textContent = "Preencha aluno, data, nível, avaliação neurocognitiva e desenvolvimento.";
+      }
       return;
     }
 
@@ -291,6 +345,26 @@ function configurarSalvarRelatorio() {
         professorNome: usuario.nome || "",
         dataAula,
         nivelDesenvolvimento,
+
+        // NOVO: Salva avaliação neurocognitiva dentro do relatório
+        avaliacaoNeurocognitiva: {
+          coordenacao: Number(coordenacao),
+          linguagem: Number(linguagem),
+          emocional: Number(emocional),
+          memoria: Number(memoria),
+          integracao: Number(integracao)
+        },
+
+        // NOVO: Média geral da avaliação neurocognitiva
+        mediaNeurocognitiva:
+          (
+            Number(coordenacao) +
+            Number(linguagem) +
+            Number(emocional) +
+            Number(memoria) +
+            Number(integracao)
+          ) / 5,
+
         desenvolvimento,
         observacoes,
         criadoEm: new Date().toISOString()
@@ -300,6 +374,13 @@ function configurarSalvarRelatorio() {
       document.querySelector("#desenvolvimento-relatorio").value = "";
       document.querySelector("#obs-relatorio").value = "";
       document.querySelector("#nivel-desenvolvimento-relatorio").value = "";
+
+      // NOVO: Limpa campos da avaliação neurocognitiva
+      document.querySelector("#avaliacao-coordenacao").value = "";
+      document.querySelector("#avaliacao-linguagem").value = "";
+      document.querySelector("#avaliacao-emocional").value = "";
+      document.querySelector("#avaliacao-memoria").value = "";
+      document.querySelector("#avaliacao-integracao").value = "";
 
       if (mensagem) mensagem.textContent = "Relatório salvo com sucesso.";
     } catch (erro) {
