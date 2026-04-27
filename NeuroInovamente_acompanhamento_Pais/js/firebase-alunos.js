@@ -128,6 +128,8 @@ async function configurarCadastroAlunosFirestore() {
         idade,
         responsavel,
         responsavelEmail,
+        // vínculo direto entre aluno e responsável
+        responsavelId: responsavelEmail,
         contato,
         status,
         observacoes,
@@ -150,6 +152,7 @@ async function configurarCadastroAlunosFirestore() {
 }
 
 // Renderiza a lista de alunos cadastrados na tabela
+// Renderiza a lista de alunos cadastrados separada por disciplina
 async function renderizarAlunosFirestore() {
   const lista = document.querySelector("#lista-alunos");
   if (!lista) return;
@@ -168,29 +171,67 @@ async function renderizarAlunosFirestore() {
       return;
     }
 
+    const grupos = {
+      NeuroTalk: [],
+      NeuroPlay: [],
+      NeuroMovi: [],
+      NeuroBeat: []
+    };
+
     snapshot.forEach((docSnap) => {
-      const aluno = docSnap.data();
-      const tr = document.createElement("tr");
+      const aluno = {
+        id: docSnap.id,
+        ...docSnap.data()
+      };
 
-      tr.innerHTML = `
-        <td>${aluno.nome}</td>
-        <td>${aluno.turma}</td>
-        <td>${aluno.disciplina || "-"}</td>
-        <td>${aluno.idade}</td>
-        <td>${aluno.responsavel}</td>
-        <td>${aluno.responsavelEmail || "-"}</td>
-        <td>${aluno.status}</td>
-        <td>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <a class="btn btn-secundario btn-ver-relatorio" href="relatorio.html?id=${docSnap.id}">
-              Ver relatório
-            </a>
-            <button class="btn-acao-excluir" data-id="${docSnap.id}">Excluir</button>
-          </div>
-        </td>
+      if (grupos[aluno.disciplina]) {
+        grupos[aluno.disciplina].push(aluno);
+      }
+    });
+
+    Object.keys(grupos).forEach((disciplina) => {
+      grupos[disciplina].sort((a, b) => {
+        return (a.nome || "").localeCompare(b.nome || "", "pt-BR", {
+          sensitivity: "base"
+        });
+      });
+    });
+
+    const renderizarTituloGrupo = (titulo) => {
+      lista.innerHTML += `
+        <tr class="linha-grupo">
+          <td colspan="8">${titulo}</td>
+        </tr>
       `;
+    };
 
-      lista.appendChild(tr);
+    const renderizarAluno = (aluno) => {
+      lista.innerHTML += `
+        <tr>
+          <td>${aluno.nome || "-"}</td>
+          <td>${aluno.turma || "-"}</td>
+          <td>${aluno.disciplina || "-"}</td>
+          <td>${aluno.idade || "-"}</td>
+          <td>${aluno.responsavel || "-"}</td>
+          <td>${aluno.responsavelEmail || "-"}</td>
+          <td>${aluno.status || "-"}</td>
+          <td>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <a class="btn btn-secundario btn-ver-relatorio" href="relatorio.html?id=${aluno.id}">
+                Ver relatório
+              </a>
+              <button class="btn-acao-excluir" data-id="${aluno.id}">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    };
+
+    Object.keys(grupos).forEach((disciplina) => {
+      if (grupos[disciplina].length) {
+        renderizarTituloGrupo(disciplina);
+        grupos[disciplina].forEach(renderizarAluno);
+      }
     });
 
     lista.querySelectorAll(".btn-acao-excluir").forEach((botao) => {
