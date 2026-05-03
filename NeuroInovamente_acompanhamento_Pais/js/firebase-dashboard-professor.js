@@ -30,17 +30,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Obtém o usuário logado do localStorage
 function obterUsuarioLogado() {
   return JSON.parse(localStorage.getItem("neurotalk_usuario")) || null;
-  function obterTurmasDoProfessor(usuario) {
-    if (Array.isArray(usuario.turmas) && usuario.turmas.length > 0) {
-      return usuario.turmas;
-    }
+}
 
-    if (usuario.turma) {
-      return [usuario.turma];
-    }
+function obterTurmasDoProfessor(usuario) {
+  if (!usuario) return [];
 
-    return [];
+  if (Array.isArray(usuario.turmas) && usuario.turmas.length > 0) {
+    return usuario.turmas;
   }
+
+  if (usuario.turma) {
+    return [usuario.turma];
+  }
+
+  return [];
 }
 // Protege a página para que apenas professores acessem
 function protegerPaginaProfessor() {
@@ -124,7 +127,13 @@ async function carregarDashboardProfessor() {
 
     let q;
 
-    if (turmasProfessor.length > 0) {
+    if (turmasProfessor.length === 1) {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || ""),
+        where("turma", "==", turmasProfessor[0])
+      );
+    } else if (turmasProfessor.length > 1) {
       q = query(
         collection(db, "alunos"),
         where("disciplina", "==", usuario.disciplina || ""),
@@ -179,7 +188,13 @@ async function carregarAlunosDaDisciplina() {
 
     let q;
 
-    if (turmasProfessor.length > 0) {
+    if (turmasProfessor.length === 1) {
+      q = query(
+        collection(db, "alunos"),
+        where("disciplina", "==", usuario.disciplina || ""),
+        where("turma", "==", turmasProfessor[0])
+      );
+    } else if (turmasProfessor.length > 1) {
       q = query(
         collection(db, "alunos"),
         where("disciplina", "==", usuario.disciplina || ""),
