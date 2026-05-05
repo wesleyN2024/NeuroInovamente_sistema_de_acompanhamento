@@ -128,18 +128,28 @@ async function carregarDashboardCoordenacao() {
     usuarios.forEach((usuario) => {
       if (usuario.perfil !== "Professor") return;
 
-      const turma = (usuario.turma || "").trim();
-      if (!turma) return;
+      let turmasProfessor = [];
 
-      if (!turmasMap[turma]) {
-        turmasMap[turma] = {
-          quantidadeAlunos: 0,
-          professor: usuario.nome || "Não definido",
-          status: "Ativa"
-        };
-      } else {
-        turmasMap[turma].professor = usuario.nome || "Não definido";
+      if (Array.isArray(usuario.turmas) && usuario.turmas.length > 0) {
+        turmasProfessor = usuario.turmas;
+      } else if (usuario.turma) {
+        turmasProfessor = usuario.turma
+          .split(",")
+          .map((item) => item.trim())
+          .filter((item) => item !== "");
       }
+
+      turmasProfessor.forEach((turma) => {
+        if (!turmasMap[turma]) {
+          turmasMap[turma] = {
+            quantidadeAlunos: 0,
+            professor: usuario.nome || "Não definido",
+            status: "Ativa"
+          };
+        } else {
+          turmasMap[turma].professor = usuario.nome || "Não definido";
+        }
+      });
     });
 
     // Converte objeto em array
